@@ -1655,29 +1655,32 @@ CAmount GetBlockValue(int nHeight, uint32_t nTime)
     return Params().SubsidyValue(netHashRate, nTime);
 }
 
-CAmount GetSeeSaw(const CAmount& blockValue, int nHeight, unsigned mnlevel)
+CAmount GetSeeSaw(const CAmount& blockValue, int nHeight)
 {
-  int nMasternodeCount;
-  if (IsSporkActive(SPORK_4_MASTERNODE_PAYMENT_ENFORCEMENT))
-      nMasternodeCount = mnodeman.stable_size(mnlevel);
-  else
-      nMasternodeCount = mnodeman.size(mnlevel);
+    int nMasternodeCountLevel1;
+    int nMasternodeCountLevel2;
+    int nMasternodeCountLevel3;
+    if (IsSporkActive(SPORK_4_MASTERNODE_PAYMENT_ENFORCEMENT))
+    {
+        nMasternodeCountLevel1 = mnodeman.stable_size(1);
+        nMasternodeCountLevel2 = mnodeman.stable_size(2);
+        nMasternodeCountLevel3 = mnodeman.stable_size(3);
+    } else {
+        nMasternodeCountLevel1 = mnodeman.size(1);
+        nMasternodeCountLevel2 = mnodeman.size(2);
+        nMasternodeCountLevel3 = mnodeman.size(3);
+    }
 
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
     int64_t mNodeCoins;
-    switch(mnlevel)
-    {
-        case 1:
-            mNodeCoins = nMasternodeCount * 1000 * COIN;
-        case 2:
-            mNodeCoins = nMasternodeCount * 3000 * COIN;
-        case 3:
-            mNodeCoins = nMasternodeCount * 5000 * COIN;
-    }
+
+    mNodeCoins = nMasternodeCountLevel1 * 1000 * COIN;
+    mNodeCoins += nMasternodeCountLevel2 * 3000 * COIN;
+    mNodeCoins += nMasternodeCountLevel3 * 5000 * COIN;
 
     if (fDebug)
-        LogPrintf("GetMasternodePayment(): moneysupply=%s, nodecoins=%s, level=%d \n", FormatMoney(nMoneySupply).c_str(),
-                  FormatMoney(mNodeCoins).c_str(),mnlevel);
+        LogPrintf("GetMasternodePayment(): moneysupply=%s, overall nodecoins=%s\n", FormatMoney(nMoneySupply).c_str(),
+                  FormatMoney(mNodeCoins).c_str());
 
     CAmount ret = 0;
     if (mNodeCoins == 0) {
@@ -1866,25 +1869,25 @@ int64_t GetMasternodePayment(int nHeight, unsigned mnlevel, int64_t blockValue)
 
     if (nHeight <= Params().StartMNPaymentsBlock())
         return 0;
-  
-    if (nHeight > Params().LAST_POW_BLOCK()) {	
+
+    if (nHeight > Params().LAST_POW_BLOCK()) {
         // PoS Phase
-        mnPayment = GetSeeSaw(blockValue, nHeight, mnlevel);
+        mnPayment = GetSeeSaw(blockValue, nHeight);
     } else {
         // PoW Phase
-	mnPayment = blockValue / 100 * 27; // 27% to masternodes
+	      mnPayment = blockValue / 100 * 27; // 27% to masternodes = 3% level1 + 9% Level 2 + 15% Level3
     }
 
     int64_t mnShare = mnPayment / 9;
     switch(mnlevel)
     {
-	// divy out shares
+	     // divy out shares
         case 1:
             return mnShare * 1;
         case 2:
             return mnShare * 3;
         case 3:
-	    return mnShare * 5;
+	          return mnShare * 5;
     }
 
     return 0;
