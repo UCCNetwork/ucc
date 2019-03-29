@@ -1857,39 +1857,34 @@ CAmount GetSeeSaw(const CAmount& blockValue, int nHeight, unsigned mnlevel)
             ret = blockValue * .01;
         }
     }
-    switch(mnlevel)
-    {
-        case 1:
-            ret = ret * 0.4;
-        case 2:
-            ret = ret * 0.7;
-        case 3:
-            ret = ret;
-    }
     return ret;
 }
 
 int64_t GetMasternodePayment(int nHeight, unsigned mnlevel, int64_t blockValue)
 {
+    int64_t mnPayment;
+
     if (nHeight <= Params().StartMNPaymentsBlock())
         return 0;
-
-    // PoS Phase
-    if (nHeight > Params().LAST_POW_BLOCK()){
-        return GetSeeSaw(blockValue, nHeight, mnlevel);
+  
+    if (nHeight > Params().LAST_POW_BLOCK()) {	
+        // PoS Phase
+        mnPayment = GetSeeSaw(blockValue, nHeight, mnlevel);
+    } else {
+        // PoW Phase
+	mnPayment = blockValue / 100 * 27; // 27% to masternodes
     }
 
-    // PoW Phase
+    int64_t mnShare = mnPayment / 9;
     switch(mnlevel)
     {
+	// divy out shares
         case 1:
-            return blockValue / 100 * 3;
-
+            return mnShare * 1;
         case 2:
-            return blockValue / 100 * 9;
-
+            return mnShare * 3;
         case 3:
-            return blockValue / 100 * 15;
+	    return mnShare * 5;
     }
 
     return 0;
