@@ -3,7 +3,7 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
 // Copyright (c) 2017-2018 The XDNA Core developers
-// Copyright (c) 2018-2018 The UCC Core developers
+// Copyright (c) 2018-2019 The UCC Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -178,7 +178,7 @@ public:
         nTargetSpacing = 1 * 60;  // UCC: 1 minute
         nAntiInstamineTime = 720; // 720 blocks with 1 reward for instamine prevention
         nMaturity = 60;
-        nMasternodeCountDrift = 3;
+        nMasternodePercentDrift = 3;
         nMaxMoneyOut = 367452000 * COIN;
 
         nStartMasternodePaymentsBlock = 7001;
@@ -295,7 +295,7 @@ public:
         nTargetSpacing = 1 * 10;  // UCC: 10 seconds
         nLastPOWBlock = 40000;
         nMaturity = 15;
-        nMasternodeCountDrift = 4;
+        nMasternodePercentDrift = 4;
         nModifierUpdateBlock = std::numeric_limits<decltype(nModifierUpdateBlock)>::max();
         nMaxMoneyOut = 1000000000 * COIN;
 
