@@ -3,6 +3,7 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
 // Copyright (c) 2017-2018 The XDNA Core developers
+// Copyright (c) 2018-2019 The UCC Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -228,7 +229,7 @@ bool DisconnectBlocksAndReprocess(int blocks);
 
 // ***TODO***
 double ConvertBitsToDouble(unsigned int nBits);
-int64_t GetMasternodePayment(int nHeight, unsigned mnlevel, int64_t blockValue);
+int64_t GetMasternodePayment(int nHeight, unsigned mnlevel, int64_t blockValue, bool bDrift = false);
 
 bool ActivateBestChain(CValidationState& state, CBlock* pblock = NULL);
 CAmount GetBlockValue(int nHeight, uint32_t nTime);
