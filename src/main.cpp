@@ -3190,7 +3190,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
                 return state.DoS(100, error("CheckBlock() : coinbase do not have the dev or fund reward."),
                 REJECT_INVALID, "bad-cb-reward-missing");
 
-            int FoudIndex = -1;
+            int FundIndex = -1;
             int DevIndex = -1;
 
             for (unsigned int indx = 0; indx < block.vtx[0].vout.size(); ++indx) {
@@ -3199,10 +3199,10 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
                 if (tmp_address == DevAddress)
                     DevIndex = indx;
                 if (tmp_address == FundAddress)
-                    FoudIndex = indx;
+                    FundIndex = indx;
             }
 
-            if(FoudIndex == -1 || DevIndex == -1)
+            if(FundIndex == -1 || DevIndex == -1)
                 return state.DoS(100, error("CheckBlock() : coinbase do not have the dev or fund reward (vout)."),
                 REJECT_INVALID, "bad-cb-reward-missing");
 
