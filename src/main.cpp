@@ -3,7 +3,7 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
 // Copyright (c) 2017-2018 The XDNA Core developers
-// Copyright (c) 2018-2018 The UCC Core developers
+// Copyright (c) 2018-2019 The UCC Core developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -1655,7 +1655,7 @@ CAmount GetBlockValue(int nHeight, uint32_t nTime)
     return Params().SubsidyValue(netHashRate, nTime);
 }
 
-CAmount GetSeeSaw(const CAmount& blockValue, int nHeight)
+CAmount GetSeeSaw(const CAmount& blockValue, int nHeight, bool bDrift)
 {
     int nMasternodeCountLevel1;
     int nMasternodeCountLevel2;
@@ -1678,6 +1678,11 @@ CAmount GetSeeSaw(const CAmount& blockValue, int nHeight)
     mNodeCoins += nMasternodeCountLevel2 * 3000 * COIN;
     mNodeCoins += nMasternodeCountLevel3 * 5000 * COIN;
 
+    if (bDrift) {
+	  // Add drift wiggle room to the calcuation.  
+	  mNodeCoins += (mNodeCoins * (Params().MasternodePercentDrift() / 100);
+    }
+	
     if (fDebug)
         LogPrintf("GetMasternodePayment(): moneysupply=%s, overall nodecoins=%s\n", FormatMoney(nMoneySupply).c_str(),
                   FormatMoney(mNodeCoins).c_str());
@@ -1704,7 +1709,7 @@ CAmount GetSeeSaw(const CAmount& blockValue, int nHeight)
     return ret;
 }
 
-int64_t GetMasternodePayment(int nHeight, unsigned mnlevel, int64_t blockValue)
+int64_t GetMasternodePayment(int nHeight, unsigned mnlevel, int64_t blockValue, bool bDrift)
 {
     int64_t mnPayment;
 
@@ -1713,7 +1718,7 @@ int64_t GetMasternodePayment(int nHeight, unsigned mnlevel, int64_t blockValue)
 
     if (nHeight > Params().LAST_POW_BLOCK()) {
         // PoS Phase
-        mnPayment = GetSeeSaw(blockValue, nHeight);
+        mnPayment = GetSeeSaw(blockValue, nHeight, bDrift);
     } else {
         // PoW Phase
 	      mnPayment = blockValue / 100 * 27; // 27% to masternodes = 3% level1 + 9% Level 2 + 15% Level3
@@ -1728,7 +1733,7 @@ int64_t GetMasternodePayment(int nHeight, unsigned mnlevel, int64_t blockValue)
         case 2:
             return mnShare * 3;
         case 3:
-	          return mnShare * 5;
+            return mnShare * 5;
     }
 
     return 0;
