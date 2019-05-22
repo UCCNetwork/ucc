@@ -395,7 +395,7 @@ void MarkBlockAsInFlight(NodeId nodeid, const uint256& hash, CBlockIndex* pindex
     mapBlocksInFlight[hash] = std::make_pair(nodeid, it);
 }
 
-/** Check whether the last unknown block a peer advertized is not yet known. */
+/** Check whether the last unknown block a peer advertised is not yet known. */
 void ProcessBlockAvailability(NodeId nodeid)
 {
     CNodeState* state = State(nodeid);
@@ -1661,6 +1661,11 @@ CAmount GetSeeSaw(const CAmount& blockValue, int nHeight, bool bDrift)
     int nMasternodeCountLevel1;
     int nMasternodeCountLevel2;
     int nMasternodeCountLevel3;
+
+    if (nHeight <= Params().LAST_POW_BLOCK()) {
+       LogPrintf("GetSeeSaw() called during POW; strange things may occur!");
+    }
+
     if (IsSporkActive(SPORK_4_MASTERNODE_PAYMENT_ENFORCEMENT))
     {
         nMasternodeCountLevel1 = mnodeman.stable_size(1);
@@ -1673,46 +1678,59 @@ CAmount GetSeeSaw(const CAmount& blockValue, int nHeight, bool bDrift)
     }
 
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
-    int64_t mNodeCoins;
+    int64_t mNodeCoins, mRawLocked;
 
     mNodeCoins = nMasternodeCountLevel1 * 1000 * COIN;
     mNodeCoins += nMasternodeCountLevel2 * 3000 * COIN;
     mNodeCoins += nMasternodeCountLevel3 * 5000 * COIN;
+    mRawLocked = mNodeCoins;
 
     if (bDrift) {
 	  // Add drift wiggle room to the calcuation.  
 	  mNodeCoins += (mNodeCoins * (Params().MasternodePercentDrift() / 100));
-	  LogPrintf("GetSeeSaw() - PercentDrift: %d\n", Params().MasternodePercentDrift());
+          if (fDebug)
+	      LogPrintf("GetSeeSaw() adding %d% to %s locked coins.  Using %s to generate minimum required payment.\n", 
+                         Params().MasternodePercentDrift(), FormatMoney(mRawLocked).c_str(), FormatMoney(mNodeCoins).c_str();
     }
-	
-    //if (fDebug)
 
-    CAmount ret = 0;
-    if (mNodeCoins == 0) {
-        ret = 0;
-    } else {  // Don't need to check height, since we can only get here if we're POS
-       /*
+    if (fDebug)
+        LogPrintf("GetSeeSaw(): calculating Masternode Reward when Coin Supply is %s and Locked Coins are %s\n", 
+                  FormatMoney(nMoneySupply).c_str(), FormatMoney(mNodeCoins).c_str());
+
+    CAmount ret = 0;  // if not POS, we will have strange results; however just leave the warning above and let it go.
+
+    /*
+    ** If there aren't any masternodes; we don't want to give the full reward to the
+    ** staker, because that, at best, would discourage someone from creating a masternode.
+    ** It also would only be possible if masternode payments aren't being enforced. 
+    ** It also opens up a vulnerability for gaming if there is very few masternodes, as
+    ** drift would need to account for the possibility of a legit staker not seeing
+    ** the masternode.  By giving the staker very little for no masternodes, both issues
+    ** are solved.
+    */
+    int64_t SeeSawTableIndex = 0;
+    if (mNodeCoins != 0) { 
+        /*
         ** Calculate the table index; levels are separated by 1.3%
         ** with an offset of 4. This makes a total table length of
         ** 77 elements; ranging from 0 to 76.
         ** 0/anysupply/.013 = 0.  maxsupply/maxsupply/.013 = 76
 	** Credits: CaveSpectre 2019
         */
-       SeeSawTableIndex = floor(mNodeCoins/nMoneySupply/.013);
-	LogPrintf("GetSeeSaw(): %d/%d = %3.3f rawindex=%3.3f\n",mNodeCoins,nMoneySupply,mNodeCoins/nMoneySupply, mNodeCoins/nMoneySupply/.013);
-
-        /*
-        ** fix up the position to get 96% to 20% masternode stake.
-        ** 100 - 0 - 4 = 96; 100 - 76 - 4 = 20
-        */
-        ret = blockValue * ((100-SeeSawTableIndex-4) / 100);
+        SeeSawTableIndex = floor((double)mNodeCoins/nMoneySupply/.013);
     }
-    //if (fDebug)
-        LogPrintf("GetSeeSaw(): moneysupply=%s, overall nodecoins=%s actual nodecoins=%s SeeSawIndex=%d mnBlockValue=%d\n", 
-                   FormatMoney(nMoneySupply).c_str(),
-                   FormatMoney(mNodeCoins).c_str(), 
-                   FormatMoney((nMasternodeCountLevel1+nMasternodeCountLevel2*3+nMasternodeCountLevel3*5)*1000*COIN),
-                   SeeSawTableIndex, ret);
+    /*
+    ** fix up the position to get 96% to 20% masternode stake.
+    ** 100 - 0 - 4 = 96; 100 - 76 - 4 = 20
+    */
+    ret = blockValue * ((double)(100-SeeSawTableIndex-4) / 100);
+
+    if (fDebug)
+        LogPrintf("GetSeeSaw(): Calculated Masternode to receive %s%s of the %s Block Reward\n", 
+		  FormatMoney(ret).c_str(),
+		  bDrift ? "at least " : "",
+                  FormatMoney(blockValue).c_str());
+
     return ret;
 }
 
@@ -5753,7 +5771,7 @@ bool SendMessages(CNode* pto, bool fSendTrickle)
     // In case there is a block that has been in flight from this peer for (2 + 0.5 * N) times the block interval
     // (with N the number of validated blocks that were in flight at the time it was requested), disconnect due to
     // timeout. We compensate for in-flight blocks to prevent killing off peers due to our own downstream link
-    // being saturated. We only count validated in-flight blocks so peers can't advertize nonexisting block hashes
+    // being saturated. We only count validated in-flight blocks so peers can't advertise nonexisting block hashes
     // to unreasonably increase our timeout.
     if (!pto->fDisconnect && state.vBlocksInFlight.size() > 0 && state.vBlocksInFlight.front().nTime < nNow - 500000 * Params().TargetSpacing() * (4 + state.vBlocksInFlight.front().nValidatedQueuedBefore)) {
         LogPrintf("Timeout downloading block %s from peer=%d, disconnecting\n", state.vBlocksInFlight.front().hash.ToString(), pto->id);
