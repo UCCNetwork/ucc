@@ -1657,6 +1657,7 @@ CAmount GetBlockValue(int nHeight, uint32_t nTime)
 
 CAmount GetSeeSaw(const CAmount& blockValue, int nHeight, bool bDrift)
 {
+    int64_t SeeSawTableIndex;
     int nMasternodeCountLevel1;
     int nMasternodeCountLevel2;
     int nMasternodeCountLevel3;
@@ -1680,25 +1681,25 @@ CAmount GetSeeSaw(const CAmount& blockValue, int nHeight, bool bDrift)
 
     if (bDrift) {
 	  // Add drift wiggle room to the calcuation.  
-	  mNodeCoins += (mNodeCoins * (Params().MasternodePercentDrift() / 100);
+	  mNodeCoins += (mNodeCoins * (Params().MasternodePercentDrift() / 100));
+	  LogPrintf("GetSeeSaw() - PercentDrift: %d\n", Params().MasternodePercentDrift());
     }
 	
-    if (fDebug)
-        LogPrintf("GetMasternodePayment(): moneysupply=%s, overall nodecoins=%s\n", FormatMoney(nMoneySupply).c_str(),
-                  FormatMoney(mNodeCoins).c_str());
+    //if (fDebug)
 
     CAmount ret = 0;
     if (mNodeCoins == 0) {
         ret = 0;
-    } else if (nHeight > Params().LAST_POW_BLOCK()) {
+    } else {  // Don't need to check height, since we can only get here if we're POS
        /*
         ** Calculate the table index; levels are separated by 1.3%
         ** with an offset of 4. This makes a total table length of
         ** 77 elements; ranging from 0 to 76.
         ** 0/anysupply/.013 = 0.  maxsupply/maxsupply/.013 = 76
-	** Credits: CaveSepctre 2019
+	** Credits: CaveSpectre 2019
         */
-        int64_t SeeSawTableIndex = floor(mNodeCoins/nMoneySupply/.013);
+       SeeSawTableIndex = floor(mNodeCoins/nMoneySupply/.013);
+	LogPrintf("GetSeeSaw(): %d/%d = %3.3f rawindex=%3.3f\n",mNodeCoins,nMoneySupply,mNodeCoins/nMoneySupply, mNodeCoins/nMoneySupply/.013);
 
         /*
         ** fix up the position to get 96% to 20% masternode stake.
@@ -1706,6 +1707,12 @@ CAmount GetSeeSaw(const CAmount& blockValue, int nHeight, bool bDrift)
         */
         ret = blockValue * ((100-SeeSawTableIndex-4) / 100);
     }
+    //if (fDebug)
+        LogPrintf("GetSeeSaw(): moneysupply=%s, overall nodecoins=%s actual nodecoins=%s SeeSawIndex=%d mnBlockValue=%d\n", 
+                   FormatMoney(nMoneySupply).c_str(),
+                   FormatMoney(mNodeCoins).c_str(), 
+                   FormatMoney((nMasternodeCountLevel1+nMasternodeCountLevel2*3+nMasternodeCountLevel3*5)*1000*COIN),
+                   SeeSawTableIndex, ret);
     return ret;
 }
 
@@ -1721,7 +1728,8 @@ int64_t GetMasternodePayment(int nHeight, unsigned mnlevel, int64_t blockValue, 
         mnPayment = GetSeeSaw(blockValue, nHeight, bDrift);
     } else {
         // PoW Phase
-	      mnPayment = blockValue / 100 * 27; // 27% to masternodes = 3% level1 + 9% Level 2 + 15% Level3
+        GetSeeSaw(blockValue, nHeight, bDrift); // debug; check seesaw
+        mnPayment = blockValue / 100 * 27; // 27% to masternodes = 3% level1 + 9% Level 2 + 15% Level3
     }
 
     int64_t mnShare = mnPayment / 9;

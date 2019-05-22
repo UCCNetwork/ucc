@@ -140,7 +140,7 @@ protected:
     int nAntiInstamineTime;
     int nLastPOWBlock;
     int nStartMasternodePaymentsBlock;
-    int nMasternodeCountDrift;
+    int nMasternodePercentDrift;
     int nMaturity;
     int nModifierUpdateBlock;
     CAmount nMaxMoneyOut;

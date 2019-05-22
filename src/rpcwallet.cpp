@@ -2084,6 +2084,7 @@ UniValue autocombinerewards(const UniValue& params, bool fHelp)
     }
     
     if (fHelp || params.size() < 1 || (fEnable && params.size() < 2) || params.size() > 3)
+        throw runtime_error(
             "autocombinerewards enable ( threshold ) ( frequency )\n"
             "\nWallet will automatically monitor for UTXOs with values below the threshold amount, "
             "and combine them into transactions sized to the threshold amount, if they reside with "
