@@ -357,12 +357,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
             auto reward_out_idx = txReward.vout.size() - 1;
 
-            // Masternode payments
-            auto mn_reward = masternodePayments.FillBlockPayee(txReward, block_value, fProofOfStake);
-
-            txReward.vout[reward_out_idx].nValue -= mn_reward;
-
-            // UCC fees
+            // UCC fees - Take these off the top
             CScript scriptDevPubKeyIn  = CScript{} << Params().xUCCDevKey() << OP_CHECKSIG;
             CScript scriptFundPubKeyIn = CScript{} << Params().xUCCFundKey() << OP_CHECKSIG;
 
@@ -371,8 +366,18 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
             txReward.vout.emplace_back(vDevReward, scriptDevPubKeyIn);
             txReward.vout.emplace_back(vFundReward, scriptFundPubKeyIn);
-
+            
             txReward.vout[reward_out_idx].nValue -= (vDevReward + vFundReward);
+
+            if (fProofOfStake) {
+                // If proof of stake, seesaw off the remaining amount so we can't end up negative
+                block_value -= (vDevReward + vFundReward);
+            }
+
+            // Masternode payments
+            auto mn_reward = masternodePayments.FillBlockPayee(txReward, block_value, fProofOfStake);
+
+            txReward.vout[reward_out_idx].nValue -= mn_reward;
 
             pblock->vtx[reward_tx_idx] = txReward;
         }
