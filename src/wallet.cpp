@@ -3340,9 +3340,10 @@ void CWallet::AutoCombineDust()
             vRewardCoins.push_back(out);
             nTotalRewardsValue += out.Value();
 
-            // Combine to the threshold and not way above
-            // make sure we will still be above the threshold when we reduce 10%  
-            if ((nTotalRewardsValue-nTotalRewardsValue/10) > nAutoCombineThreshold * COIN)
+            // Combine until our total is enough above the threshold to remain above after adjustments
+            // If no threshold; we want to combine up to MAX_STANDARD_TX_SIZE
+            if (nAutoCombineThreshold && 
+                ((nTotalRewardsValue - nTotalRewardsValue / 10) > nAutoCombineThreshold * COIN))
                 break;
 
             // Around 180 bytes per input.  We use 190 to be certain

@@ -1677,6 +1677,10 @@ CAmount GetSeeSaw(const CAmount& blockValue, int nHeight, bool bDrift)
         nMasternodeCountLevel3 = mnodeman.size(3);
     }
 
+    if (nHeight <= Params().LAST_POW_BLOCK()) {
+       LogPrintf("GetSeeSaw() called during POW; strange things may occur!");
+    }
+
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
 
     mNodeCoins = nMasternodeCountLevel1 * 1000 * COIN;
@@ -1717,7 +1721,7 @@ CAmount GetSeeSaw(const CAmount& blockValue, int nHeight, bool bDrift)
         ** with an offset of 4. This makes a total table length of
         ** 77 elements; ranging from 0 to 76.
         ** 0/anysupply/.013 = 0.  maxsupply/maxsupply/.013 = 76
-	** Credits: CaveSpectre 2019
+        ** Credits: CaveSpectre 2019
         */
         SeeSawTableIndex = floor((double)mNodeCoins/nMoneySupply/.013);
     }
