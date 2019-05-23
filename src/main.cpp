@@ -1657,13 +1657,13 @@ CAmount GetBlockValue(int nHeight, uint32_t nTime)
 
 CAmount GetSeeSaw(const CAmount& blockValue, int nHeight, bool bDrift)
 {
-    int64_t SeeSawTableIndex;
     int nMasternodeCountLevel1;
     int nMasternodeCountLevel2;
     int nMasternodeCountLevel3;
+    static int lastHeight=0;
 
-    if (nHeight <= Params().LAST_POW_BLOCK()) {
-       LogPrintf("GetSeeSaw() called during POW; strange things may occur!");
+    if ((nHeight <= Params().LAST_POW_BLOCK()) && (nHeight != lastHeight)) {
+       LogPrintf("GetSeeSaw() called during POW; strange things may occur!\n");
     }
 
     if (IsSporkActive(SPORK_4_MASTERNODE_PAYMENT_ENFORCEMENT))
@@ -1687,14 +1687,14 @@ CAmount GetSeeSaw(const CAmount& blockValue, int nHeight, bool bDrift)
 
     if (bDrift) {
 	  // Add drift wiggle room to the calcuation.  
-	  mNodeCoins += (mNodeCoins * (Params().MasternodePercentDrift() / 100));
-          if (fDebug)
-	      LogPrintf("GetSeeSaw() adding %d% to %s locked coins.  Using %s to generate minimum required payment.\n", 
-                         Params().MasternodePercentDrift(), FormatMoney(mRawLocked).c_str(), FormatMoney(mNodeCoins).c_str();
+	  mNodeCoins += (mNodeCoins * ((double)Params().MasternodePercentDrift() / 100));
+          if (fDebug && (nHeight != lastHeight))
+	      LogPrintf("GetSeeSaw(): Adding %d%% to %s locked coins.  Using %s to generate minimum required payment.\n", 
+                        (int)Params().MasternodePercentDrift(), FormatMoney(mRawLocked).c_str(), FormatMoney(mNodeCoins).c_str());
     }
 
-    if (fDebug)
-        LogPrintf("GetSeeSaw(): calculating Masternode Reward when Coin Supply is %s and Locked Coins are %s\n", 
+    if (fDebug && (nHeight != lastHeight))
+        LogPrintf("GetSeeSaw(): Calculating Masternode Reward when Coin Supply is %s and Locked Coins are %s\n", 
                   FormatMoney(nMoneySupply).c_str(), FormatMoney(mNodeCoins).c_str());
 
     CAmount ret = 0;  // if not POS, we will have strange results; however just leave the warning above and let it go.
@@ -1724,13 +1724,13 @@ CAmount GetSeeSaw(const CAmount& blockValue, int nHeight, bool bDrift)
     ** 100 - 0 - 4 = 96; 100 - 76 - 4 = 20
     */
     ret = blockValue * ((double)(100-SeeSawTableIndex-4) / 100);
-
-    if (fDebug)
+    if (fDebug && (nHeight != lastHeight))
         LogPrintf("GetSeeSaw(): Calculated Masternode to receive %s%s of the %s Block Reward\n", 
-		  FormatMoney(ret).c_str(),
 		  bDrift ? "at least " : "",
+		  FormatMoney(ret).c_str(),
                   FormatMoney(blockValue).c_str());
 
+    lastHeight = nHeight; // save the height so we don't keep issuing the same messages
     return ret;
 }
 
@@ -1746,7 +1746,6 @@ int64_t GetMasternodePayment(int nHeight, unsigned mnlevel, int64_t blockValue, 
         mnPayment = GetSeeSaw(blockValue, nHeight, bDrift);
     } else {
         // PoW Phase
-        GetSeeSaw(blockValue, nHeight, bDrift); // debug; check seesaw
         mnPayment = blockValue / 100 * 27; // 27% to masternodes = 3% level1 + 9% Level 2 + 15% Level3
     }
 
