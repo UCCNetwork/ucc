@@ -1678,7 +1678,6 @@ CAmount GetSeeSaw(const CAmount& blockValue, int nHeight, bool bDrift)
     }
 
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
-    int64_t mNodeCoins, mRawLocked;
 
     mNodeCoins = nMasternodeCountLevel1 * 1000 * COIN;
     mNodeCoins += nMasternodeCountLevel2 * 3000 * COIN;
@@ -1686,16 +1685,19 @@ CAmount GetSeeSaw(const CAmount& blockValue, int nHeight, bool bDrift)
     mRawLocked = mNodeCoins;
 
     if (bDrift) {
-	  // Add drift wiggle room to the calcuation.  
-	  mNodeCoins += (mNodeCoins * ((double)Params().MasternodePercentDrift() / 100));
-          if (fDebug && (nHeight != lastHeight))
-	      LogPrintf("GetSeeSaw(): Adding %d%% to %s locked coins.  Using %s to generate minimum required payment.\n", 
-                        (int)Params().MasternodePercentDrift(), FormatMoney(mRawLocked).c_str(), FormatMoney(mNodeCoins).c_str());
+        int64_t mRawLocked = mNodeCoins;
+        // Add drift wiggle room to the calcuation.  
+        mNodeCoins += (mNodeCoins * ((double)Params().MasternodePercentDrift() / 100));
+        if (fDebug && (nHeight != lastHeight)) {
+            LogPrintf("GetSeeSaw(): Adding %d%% to %s locked coins.  Using %s to generate minimum required payment.\n", 
+                      (int)Params().MasternodePercentDrift(), FormatMoney(mRawLocked).c_str(), FormatMoney(mNodeCoins).c_str());
+        }
     }
 
-    if (fDebug && (nHeight != lastHeight))
+    if (fDebug && (nHeight != lastHeight)) {
         LogPrintf("GetSeeSaw(): Calculating Masternode Reward when Coin Supply is %s and Locked Coins are %s\n", 
                   FormatMoney(nMoneySupply).c_str(), FormatMoney(mNodeCoins).c_str());
+    }
 
     CAmount ret = 0;  // if not POS, we will have strange results; however just leave the warning above and let it go.
 
@@ -1724,11 +1726,12 @@ CAmount GetSeeSaw(const CAmount& blockValue, int nHeight, bool bDrift)
     ** 100 - 0 - 4 = 96; 100 - 76 - 4 = 20
     */
     ret = blockValue * ((double)(100-SeeSawTableIndex-4) / 100);
-    if (fDebug && (nHeight != lastHeight))
+    if (fDebug && (nHeight != lastHeight)) {
         LogPrintf("GetSeeSaw(): Calculated Masternode to receive %s%s of the %s Block Reward\n", 
-		  bDrift ? "at least " : "",
-		  FormatMoney(ret).c_str(),
+                  bDrift ? "at least " : "",
+                  FormatMoney(ret).c_str(),
                   FormatMoney(blockValue).c_str());
+    }
 
     lastHeight = nHeight; // save the height so we don't keep issuing the same messages
     return ret;
