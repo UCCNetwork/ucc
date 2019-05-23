@@ -1682,11 +1682,11 @@ CAmount GetSeeSaw(const CAmount& blockValue, int nHeight, bool bDrift)
     }
 
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
+    int64_t mNodeCoins;
 
     mNodeCoins = nMasternodeCountLevel1 * 1000 * COIN;
     mNodeCoins += nMasternodeCountLevel2 * 3000 * COIN;
     mNodeCoins += nMasternodeCountLevel3 * 5000 * COIN;
-    mRawLocked = mNodeCoins;
 
     if (bDrift) {
         int64_t mRawLocked = mNodeCoins;
