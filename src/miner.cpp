@@ -108,11 +108,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     txNew.vin.resize(1);
     txNew.vin[0].prevout.SetNull();
     txNew.vout.resize(1);
-    // txNew.vout[0].SetEmpty();
     txNew.vout[0].scriptPubKey = scriptPubKeyIn;
-
     pblock->vtx.push_back(txNew);
-
     pblocktemplate->vTxFees.push_back(-1);   // updated at end
     pblocktemplate->vTxSigOps.push_back(-1); // updated at end
 
@@ -342,21 +339,23 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             }
         }
 
-        if (!fProofOfStake)
-            UpdateTime(pblock, pindexPrev);
-
         CAmount block_value = GetBlockValue(nHeight, pblock->nTime); // XXX - Second Param isn't used
 
-        txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
-
-        // Compute final transaction.
         if (!fProofOfStake) {
+            // We have already pushed back txNew; so maybe these are things that mess up that for PoS
+            UpdateTime(pblock, pindexPrev);
             txNew.vout[0].nValue       = block_value + nFees;
             txNew.vout[0].scriptPubKey = scriptPubKeyIn;
+            // below may be redundant, since we pblock->vin[0].scriptSig further down
+            txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
+	}
+
+        // Compute final coinbase transaction.
+        pblock->vin[0].scriptSig = CScript() << nHeight << OP_0;
+        if (!fProofOfStake) {
+            pblock->vtx[0] = txNew;  // This could very much be what blew up our PoS
             pblocktemplate->vTxFees[0] = -nFees;
         }
-
-        pblock->vtx[0] = txNew;
 
         if(nHeight > 1) { // exclude premine
 
