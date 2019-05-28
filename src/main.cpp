@@ -3189,15 +3189,25 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 
     if (block.IsProofOfStake()) {
         // Coinbase output should be empty if proof-of-stake block
-        if (block.vtx[0].vout.size() != 1 || !block.vtx[0].vout[0].IsEmpty())
+        if (block.vtx[0].vout.size() != 1 || !block.vtx[0].vout[0].IsEmpty()) {
+            logPrintf("CheckBlock() : PoS Failure, block.vtx[0].vout.size() = %d, block.vtx[0].vout[0].IsEmpty() = %s\n",
+                      block.vtx[0].vout.size(), block.vtx[0].vout[0].IsEmpty() ? "true" : "false");
             return state.DoS(100, error("CheckBlock() : coinbase output not empty for proof-of-stake block"));
+        }
 
         // Second transaction must be coinstake, the rest must not be
-        if (block.vtx.empty() || !block.vtx[1].IsCoinStake())
+        if (block.vtx.empty() || !block.vtx[1].IsCoinStake()) {
+            logPrintf("CheckBlock() : PoS Failure, block.vtx.empty()=%s, block.vtx[1].IsCoinStake()=%s\n",
+		      block.vtx.empty() ? "true" : "false", block.vtx[1].IsCoinStake() ? "true" : "false");
             return state.DoS(100, error("CheckBlock() : second tx is not coinstake"));
-        for (unsigned int i = 2; i < block.vtx.size(); i++)
-            if (block.vtx[i].IsCoinStake())
+        }
+        for (unsigned int i = 2; i < block.vtx.size(); i++) {
+            if (block.vtx[i].IsCoinStake()) {
+                logPrintf("CheckBlock() : PoS, tx=%d, IsCoinStake=%s\n",
+                           i, block.vtx[i].vtx[i].IsCoinStake() ? "true" : "false");
                 return state.DoS(100, error("CheckBlock() : more than one coinstake"));
+	    }
+	}
     }
     else {
             int nHeight = 0;
@@ -3709,16 +3719,16 @@ bool TestBlockValidity(CValidationState& state, const CBlock& block, CBlockIndex
 
     // NOTE: CheckBlockHeader is called by CheckBlock
     if (!ContextualCheckBlockHeader(block, state, pindexPrev)) {
-        LogPrintf("TestBlockValidity(): !ContextualCheckBlockHeader"); return false;
+        LogPrintf("TestBlockValidity(): ContextualCheckBlockHeader() failed\n"); return false;
     }
     if (!CheckBlock(block, state, fCheckPOW, fCheckMerkleRoot)) {
-        LogPrintf("TestBlockValidity(): !CheckBlock"); return false;
+        LogPrintf("TestBlockValidity(): CheckBlock() failed\n"); return false;
     }
     if (!ContextualCheckBlock(block, state, pindexPrev)) {
-        LogPrintf("TestBlockValidity(): !ContextualCheckBlock"); return false;
+        LogPrintf("TestBlockValidity(): ContextualCheckBlock() failed\n"); return false;
     }
     if (!ConnectBlock(block, state, &indexDummy, viewNew, true)) {
-        LogPrintf("TestBlockValidity(): !ConnectBlock"); return false;
+        LogPrintf("TestBlockValidity(): ConnectBlock() failed\n"); return false;
     }
     assert(state.IsValid());
 
