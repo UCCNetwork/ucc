@@ -90,12 +90,12 @@ void UpdateTime(CBlockHeader* pblock, const CBlockIndex* pindexPrev)
 
 CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, bool fProofOfStake)
 {
+    CReserveKey reservekey(pwallet);
+
     // Create new block
     unique_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
-
-	if (!pblocktemplate.get())
+    if (!pblocktemplate.get())
         return NULL;
-
     CBlock* pblock = &pblocktemplate->block; // pointer for convenience
 
     // -regtest only: allow overriding block.nVersion with
@@ -226,7 +226,8 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
                 int nConf = nHeight - coins->nHeight;
 
-                dPriority += (double)nValueIn * nConf;
+                dPriority = double_safe_addition(dPriority, ((double)nValueIn * nConf));
+
             }
             if (fMissingInputs) continue;
 
@@ -339,77 +340,79 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             }
         }
 
-        CAmount block_value = GetBlockValue(nHeight, pblock->nTime); // XXX - Second Param isn't used
+		
+		CAmount block_value = GetBlockValue(nHeight, pblock->nTime);
+		
+		//Masternode and general budget payments
+		CAmount mn_reward = masternodePayments.FillBlockPayee(txNew, block_value, fProofOfStake);
 
-        if (!fProofOfStake) {
-            // We have already pushed back txNew; so maybe these are things that mess up that for PoS
-            UpdateTime(pblock, pindexPrev);
-            txNew.vout[0].nValue       = block_value + nFees;
-            txNew.vout[0].scriptPubKey = scriptPubKeyIn;
-            // below may be redundant, since we pblock->vin[0].scriptSig further down
-            txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
-	}
+		CAmount vDevReward  = block_value * Params().GetDevFee() / 100;
+        CAmount vFundReward = block_value * Params().GetFundFee() / 100;
 
-        // Compute final coinbase transaction.
-        pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
-        if (!fProofOfStake) {
-            pblock->vtx[0] = txNew;  // This could very much be what blew up our PoS
-            pblocktemplate->vTxFees[0] = -nFees;
-        }
+		CScript scriptDevPubKeyIn  = CScript{} << Params().xUCCDevKey() << OP_CHECKSIG;
+        CScript scriptFundPubKeyIn = CScript{} << Params().xUCCFundKey() << OP_CHECKSIG;
 
-        if(nHeight > 1) { // exclude premine
+		if(fProofOfStake) {
+			/**For Proof Of Stake vout[0] must be null
+             * Stake reward can be split into many different outputs, so we must
+             * use vout.size() to align with several different cases.
+             * An additional output is appended as the masternode payment
+             */
+			unsigned int i = txNew.vout.size();
+			txNew.vout.resize(i + 3);
+			txNew.vout[i].scriptPubKey = payee;
+            txNew.vout[i].nValue = mn_reward + nFees;
 
-            auto reward_tx_idx = fProofOfStake ? 1 : 0;
+			txNew.vout[i+1].scriptPubKey = scriptDevPubKeyIn;
+			txNew.vout[i+1].nValue = vDevReward;
+			LogPrintf("fProofOfStake: developerfee value: %u\n", vDevReward);
 
-            CMutableTransaction txReward{pblock->vtx[reward_tx_idx]};
-
-            auto reward_out_idx = txReward.vout.size() - 1;
-
-            // UCC fees - Take these off the top
-            CScript scriptDevPubKeyIn  = CScript{} << Params().xUCCDevKey() << OP_CHECKSIG;
-            CScript scriptFundPubKeyIn = CScript{} << Params().xUCCFundKey() << OP_CHECKSIG;
-
-            auto vDevReward  = block_value * Params().GetDevFee() / 100;
-            auto vFundReward = block_value * Params().GetFundFee() / 100;
-
-            txReward.vout.emplace_back(vDevReward, scriptDevPubKeyIn);
-            txReward.vout.emplace_back(vFundReward, scriptFundPubKeyIn);
+			txNew.vout[i+2].scriptPubKey = scriptFundPubKeyIn;
+			txNew.vout[i+2].nValue = vFundReward;
+			LogPrintf("fProofOfStake: Funding-Fee value: %u\n", vFundReward);
             
-            txReward.vout[reward_out_idx].nValue -= (vDevReward + vFundReward);
+			//subtract fees from the stake reward            
+			txNew.vout[i-1].nValue -= (vDevReward + vFundReward);
+        } else {
+			txNew.vout.resize(4);
+            txNew.vout[1].scriptPubKey = payee;
+            txNew.vout[1].nValue = mn_reward + nFees;
+			
+			txNew.vout[2].scriptPubKey = scriptDevPubKeyIn;
+            txNew.vout[2].nValue = vDevReward;
 
-            if (fProofOfStake) {
-                // If proof of stake, seesaw off the remaining amount so we can't end up negative
-                block_value -= (vDevReward + vFundReward);
-            }
-
-            // Masternode payments
-            auto mn_reward = masternodePayments.FillBlockPayee(txReward, block_value, fProofOfStake);
-
-            txReward.vout[reward_out_idx].nValue -= mn_reward;
-
-            pblock->vtx[reward_tx_idx] = txReward;
+			txNew.vout[3].scriptPubKey = scriptFundPubKeyIn;
+            txNew.vout[3].nValue = vFundReward;
+			
+            txNew.vout[0].nValue = blockValue - mn_reward - vDevReward - vFundReward;
         }
+
+		if (!fProofOfStake) {
+			//Make payee
+            if (txNew.vout.size() > 1) {
+                pblock->payee = txNew.vout[1].scriptPubKey;
+			}
+		}
 
         nLastBlockTx = nBlockTx;
         nLastBlockSize = nBlockSize;
         LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
 
+        // Compute final coinbase transaction.
+        pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
+        if (!fProofOfStake) {
+            pblock->vtx[0] = txNew;
+            pblocktemplate->vTxFees[0] = -nFees;
+        }
+
         // Fill in header
         pblock->hashPrevBlock = pindexPrev->GetBlockHash();
-        pblock->nBits = GetNextWorkRequired(pindexPrev, pblock); // XXX - Doesn't even use second parameter
+        if (!fProofOfStake)
+            UpdateTime(pblock, pindexPrev);
+        pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
         pblock->nNonce = 0;
 
         pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
-
-        if (fProofOfStake) {
-            unsigned int nExtraNonce = 0;
-            IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
-            LogPrintf("CPUMiner : proof-of-stake block found %s \n", pblock->GetHash().ToString().c_str());
-            if (!pblock->SignBlock(*pwallet)) {
-                LogPrintf("CreateNewBlock(): Signing new block with UTXO key failed \n");
-                return nullptr;
-            }
-        }
 
         CValidationState state;
         if (!TestBlockValidity(state, *pblock, pindexPrev, false, false)) {
