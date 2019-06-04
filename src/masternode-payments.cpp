@@ -87,7 +87,6 @@ CAmount CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, CAmount 
         return 0;
 
     CAmount mn_payments_total = 0;
-	unsigned int counter = 0;
 
     for(unsigned mnlevel = CMasternode::LevelValue::MIN; mnlevel <= CMasternode::LevelValue::MAX; ++mnlevel) {
 
@@ -108,31 +107,26 @@ CAmount CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, CAmount 
         if(!masternodePayment)
             continue;
 
-		if (fProofOfStake && counter==0) {
-            /**For Proof Of Stake the first vout[0] must be null
+        if (fProofOfStake && (txNew.vout.size() == 1)) {
+            /*
+             * For Proof Of Stake the first vout[0] must be null
              * Stake reward can be split into many different outputs, so we must
              * use vout.size() to align with several different cases.
              * An additional output is appended as the masternode payment
              */
-
-            txNew.vout.resize(txNew.vout.size() + 1);
-			txNew.vout.emplace_back(masternodePayment, payee);
-
-        } else {
-
-			// PoW payment
-            txNew.vout.emplace_back(masternodePayment, payee);
-
+            LogPrintf("FillBlockPayee() TX only contained one vout!\n");
+            txNew.vout[0].SetEmpty();
         }
+        txNew.vout.emplace_back(masternodePayment, payee);
 
-        mn_payments_total += masternodePayment;
-		counter++;
+	mn_payments_total += masternodePayment;
 
         CTxDestination address1;
         ExtractDestination(payee, address1);
         CBitcoinAddress address2(address1);
 
-        LogPrintf("Masternode payment of %s to %s\n", FormatMoney(masternodePayment).c_str(), address2.ToString().c_str());
+        LogPrintf("Masternode payment of %s to %s (vout[%d])\n", FormatMoney(masternodePayment).c_str(), 
+                  address2.ToString().c_str(), txNew.vout.size()-1);
     }
 
     return mn_payments_total;
