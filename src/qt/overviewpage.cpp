@@ -355,7 +355,7 @@ void OverviewPage::updatBlockChainInfo()
 
     int CurrentBlock = chainActive.Height();
     int64_t netHashRate = chainActive.GetNetworkHashPS(24, CurrentBlock);
-    int64_t BlockReward = Params().SubsidyValue(netHashRate, tip_time);
+    int64_t BlockReward = Params().SubsidyValue(netHashRate);
     double BlockRewardUCC =  static_cast<double>(BlockReward)/static_cast<double>(COIN);
     //int64_t UCCSupply = chainActive.Tip()->nMoneySupply / COIN;
 
