@@ -84,7 +84,7 @@ static const Checkpoints::CCheckpointData dataRegtest = {
     0,
     100};
 
-CAmount CChainParams::SubsidyValue(SubsidySwitchPoints::key_type level, uint32_t nTime) const
+CAmount CChainParams::SubsidyValue(SubsidySwitchPoints::key_type level) const
 {
     const auto& points = subsidySwitchPoints;
 

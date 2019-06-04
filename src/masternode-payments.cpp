@@ -87,12 +87,12 @@ CAmount CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, CAmount 
         return 0;
 
     CAmount mn_payments_total = 0;
+	unsigned int counter = 0;
 
     for(unsigned mnlevel = CMasternode::LevelValue::MIN; mnlevel <= CMasternode::LevelValue::MAX; ++mnlevel) {
 
         CScript payee;
 
-        //spork
         if (!masternodePayments.GetBlockPayee(pindexPrev->nHeight + 1, mnlevel, payee)) {
             //no masternode detected
             CMasternode* winningNode = mnodeman.GetCurrentMasterNode(mnlevel, 1);
@@ -108,9 +108,25 @@ CAmount CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, CAmount 
         if(!masternodePayment)
             continue;
 
-        txNew.vout.emplace_back(masternodePayment, payee);
+		if (fProofOfStake && counter==0) {
+            /**For Proof Of Stake the first vout[0] must be null
+             * Stake reward can be split into many different outputs, so we must
+             * use vout.size() to align with several different cases.
+             * An additional output is appended as the masternode payment
+             */
+
+            txNew.vout.resize(txNew.vout.size() + 1);
+			txNew.vout.emplace_back(masternodePayment, payee);
+
+        } else {
+
+			// PoW payment
+            txNew.vout.emplace_back(masternodePayment, payee);
+
+        }
 
         mn_payments_total += masternodePayment;
+		counter++;
 
         CTxDestination address1;
         ExtractDestination(payee, address1);
@@ -345,7 +361,7 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew, uint3
     if(!max_signatures.size())
         return true;
 
-    CAmount nReward = GetBlockValue(nBlockHeight, nTime);
+    CAmount nReward = GetBlockValue(nBlockHeight);
 
     if (nBlockHeight > Params().LAST_POW_BLOCK()) {
         // Deduct the payments out so SeeSaw splits the right amount
