@@ -358,34 +358,47 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         }
 
         if(nHeight > 1) { // exclude premine
-
+				if(fDebug)LogPrintf("CreateNewBlock(): is POS? %u\n", fProofOfStake);
             auto reward_tx_idx = fProofOfStake ? 1 : 0;
+				if(fDebug)LogPrintf("CreateNewBlock(): REWARD_TX-ID %u\n", reward_tx_idx);
 
             CMutableTransaction txReward{pblock->vtx[reward_tx_idx]};
 
             auto reward_out_idx = txReward.vout.size() - 1;
+				if(fDebug)LogPrintf("CreateNewBlock(): VTX[%u].vout.size()=%u\n", reward_tx_idx,txReward.vout.size());
+				if(fDebug)LogPrintf("CreateNewBlock(): REWARD-OUT-ID %u\n", reward_out_idx);
 
             // UCC fees - Take these off the top
             CScript scriptDevPubKeyIn  = CScript{} << Params().xUCCDevKey() << OP_CHECKSIG;
             CScript scriptFundPubKeyIn = CScript{} << Params().xUCCFundKey() << OP_CHECKSIG;
 
+				if(fDebug)LogPrintf("CreateNewBlock(): BlockValue: %f BEFORE\n", block_value);
             auto vDevReward  = block_value * Params().GetDevFee() / 100;
+				if(fDebug)LogPrintf("CreateNewBlock(): DEV-REWARD %f\n", vDevReward);
             auto vFundReward = block_value * Params().GetFundFee() / 100;
+				if(fDebug)LogPrintf("CreateNewBlock(): FUND-REWARD %f\n", vFundReward);
+				if(fDebug)LogPrintf("CreateNewBlock(): VTX[%u].vout.size()=%u\n", reward_tx_idx,txReward.vout.size());	
 
             txReward.vout.emplace_back(vDevReward, scriptDevPubKeyIn);
+				if(fDebug)LogPrintf("CreateNewBlock(): VTX[%u].vout.size()=%u\n", reward_tx_idx,txReward.vout.size());
             txReward.vout.emplace_back(vFundReward, scriptFundPubKeyIn);
-            
+				if(fDebug)LogPrintf("CreateNewBlock(): VTX[%u].vout.size()=%u\n", reward_tx_idx,txReward.vout.size());
+            	if(fDebug)LogPrintf("CreateNewBlock(): VTX[%u].vout[%u].nValue=%u BEFORE\n", reward_tx_idx,reward_out_idx,txReward.vout[reward_out_idx].nValue);
             txReward.vout[reward_out_idx].nValue -= (vDevReward + vFundReward);
+				if(fDebug)LogPrintf("CreateNewBlock(): VTX[%u].vout[%u].nValue=%u AFTER\n", reward_tx_idx,reward_out_idx,txReward.vout[reward_out_idx].nValue);
 
             if (fProofOfStake) {
                 // If proof of stake, seesaw off the remaining amount so we can't end up negative
                 block_value -= (vDevReward + vFundReward);
             }
+				if(fDebug)LogPrintf("CreateNewBlock(): BlockValue: %f AFTER\n", block_value);
 
             // Masternode payments
             auto mn_reward = masternodePayments.FillBlockPayee(txReward, block_value, fProofOfStake);
+				if(fDebug)LogPrintf("CreateNewBlock(): MNReward: %f\n", mn_reward);
 
             txReward.vout[reward_out_idx].nValue -= mn_reward;
+				if(fDebug)LogPrintf("CreateNewBlock(): VTX[%u].vout[%u].nValue=%u AFTER MN\n", reward_tx_idx,reward_out_idx,txReward.vout[reward_out_idx].nValue);
 
             pblock->vtx[reward_tx_idx] = txReward;
         }
