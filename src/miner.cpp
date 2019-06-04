@@ -93,7 +93,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     // Create new block
     unique_ptr<CBlockTemplate> pblocktemplate(new CBlockTemplate());
 
-	if (!pblocktemplate.get())
+    if (!pblocktemplate.get())
         return NULL;
 
     CBlock* pblock = &pblocktemplate->block; // pointer for convenience
@@ -136,14 +136,14 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
                 pblock->vtx[0].vout[0].SetEmpty();
                 pblock->vtx.push_back(CTransaction(txCoinStake));
                 fStakeFound = true;
-				if(fDebug)LogPrint("staking", "CreateNewBlock(): stake found!\n");
+                if (fDebug) LogPrint("staking", "CreateNewBlock(): stake found! vout size=%d\n", pblock->vtx[1].vout.size());
             }
             nLastCoinStakeSearchInterval = nSearchTime - nLastCoinStakeSearchTime;
             nLastCoinStakeSearchTime = nSearchTime;
         }
 
         if (!fStakeFound) {
-            if(fDebug)LogPrint("staking", "CreateNewBlock(): stake not found\n");
+            if (fDebug) LogPrint("staking", "CreateNewBlock(): stake not found\n");
             return NULL;
         }
     }
@@ -341,64 +341,64 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             }
         }
 
-		CAmount block_value = GetBlockValue(nHeight);
+        CAmount block_value = GetBlockValue(nHeight);
 		
-		if (!fProofOfStake) {
+        if (!fProofOfStake) {
             UpdateTime(pblock, pindexPrev);
             txNew.vout[0].nValue       = block_value + nFees;
             txNew.vout[0].scriptPubKey = scriptPubKeyIn;
             txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
-		}
+        }
 
         // Compute final coinbase transaction.
-        pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;
+        pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0; // I still don't like this and don't understand it.  It seems the most fishy of everything.
         if (!fProofOfStake) {
             pblock->vtx[0] = txNew;
             pblocktemplate->vTxFees[0] = -nFees;
         }
 
         if(nHeight > 1) { // exclude premine
-				if(fDebug)LogPrintf("CreateNewBlock(): is POS? %u\n", fProofOfStake);
+            if(fDebug) LogPrintf("CreateNewBlock(): is POS? %u\n", fProofOfStake);
             auto reward_tx_idx = fProofOfStake ? 1 : 0;
-				if(fDebug)LogPrintf("CreateNewBlock(): REWARD_TX-ID %u\n", reward_tx_idx);
+            if(fDebug) LogPrintf("CreateNewBlock(): REWARD_TX-ID %u\n", reward_tx_idx);
 
             CMutableTransaction txReward{pblock->vtx[reward_tx_idx]};
 
             auto reward_out_idx = txReward.vout.size() - 1;
-				if(fDebug)LogPrintf("CreateNewBlock(): VTX[%u].vout.size()=%u\n", reward_tx_idx,txReward.vout.size());
-				if(fDebug)LogPrintf("CreateNewBlock(): REWARD-OUT-ID %u\n", reward_out_idx);
+            if(fDebug) LogPrintf("CreateNewBlock(): VTX[%u].vout.size()=%u\n", reward_tx_idx,txReward.vout.size());
+            if(fDebug) LogPrintf("CreateNewBlock(): REWARD-OUT-ID %u\n", reward_out_idx);
 
             // UCC fees - Take these off the top
             CScript scriptDevPubKeyIn  = CScript{} << Params().xUCCDevKey() << OP_CHECKSIG;
             CScript scriptFundPubKeyIn = CScript{} << Params().xUCCFundKey() << OP_CHECKSIG;
 
-				if(fDebug)LogPrintf("CreateNewBlock(): BlockValue: %f BEFORE\n", block_value);
+            if(fDebug) LogPrintf("CreateNewBlock(): BlockValue: %f BEFORE\n", block_value);
             auto vDevReward  = block_value * Params().GetDevFee() / 100;
-				if(fDebug)LogPrintf("CreateNewBlock(): DEV-REWARD %f\n", vDevReward);
+            if(fDebug) LogPrintf("CreateNewBlock(): DEV-REWARD %f\n", vDevReward);
             auto vFundReward = block_value * Params().GetFundFee() / 100;
-				if(fDebug)LogPrintf("CreateNewBlock(): FUND-REWARD %f\n", vFundReward);
-				if(fDebug)LogPrintf("CreateNewBlock(): VTX[%u].vout.size()=%u\n", reward_tx_idx,txReward.vout.size());	
+            if(fDebug) LogPrintf("CreateNewBlock(): FUND-REWARD %f\n", vFundReward);
+            if(fDebug) LogPrintf("CreateNewBlock(): VTX[%u].vout.size()=%u\n", reward_tx_idx,txReward.vout.size());	
 
             txReward.vout.emplace_back(vDevReward, scriptDevPubKeyIn);
-				if(fDebug)LogPrintf("CreateNewBlock(): VTX[%u].vout.size()=%u\n", reward_tx_idx,txReward.vout.size());
+            if (fDebug) LogPrintf("CreateNewBlock(): VTX[%u].vout.size()=%u\n", reward_tx_idx,txReward.vout.size());
             txReward.vout.emplace_back(vFundReward, scriptFundPubKeyIn);
-				if(fDebug)LogPrintf("CreateNewBlock(): VTX[%u].vout.size()=%u\n", reward_tx_idx,txReward.vout.size());
-            	if(fDebug)LogPrintf("CreateNewBlock(): VTX[%u].vout[%u].nValue=%u BEFORE\n", reward_tx_idx,reward_out_idx,txReward.vout[reward_out_idx].nValue);
+            if (fDebug) LogPrintf("CreateNewBlock(): VTX[%u].vout.size()=%u\n", reward_tx_idx,txReward.vout.size());
+            if (fDebug) LogPrintf("CreateNewBlock(): VTX[%u].vout[%u].nValue=%u BEFORE\n", reward_tx_idx,reward_out_idx,txReward.vout[reward_out_idx].nValue);
             txReward.vout[reward_out_idx].nValue -= (vDevReward + vFundReward);
-				if(fDebug)LogPrintf("CreateNewBlock(): VTX[%u].vout[%u].nValue=%u AFTER\n", reward_tx_idx,reward_out_idx,txReward.vout[reward_out_idx].nValue);
+            if (fDebug) LogPrintf("CreateNewBlock(): VTX[%u].vout[%u].nValue=%u AFTER\n", reward_tx_idx,reward_out_idx,txReward.vout[reward_out_idx].nValue);
 
             if (fProofOfStake) {
                 // If proof of stake, seesaw off the remaining amount so we can't end up negative
                 block_value -= (vDevReward + vFundReward);
             }
-				if(fDebug)LogPrintf("CreateNewBlock(): BlockValue: %f AFTER\n", block_value);
+            if (fDebug) LogPrintf("CreateNewBlock(): BlockValue: %f AFTER\n", block_value);
 
             // Masternode payments
             auto mn_reward = masternodePayments.FillBlockPayee(txReward, block_value, fProofOfStake);
-				if(fDebug)LogPrintf("CreateNewBlock(): MNReward: %f\n", mn_reward);
+            if (fDebug) LogPrintf("CreateNewBlock(): MNReward: %f\n", mn_reward);
 
             txReward.vout[reward_out_idx].nValue -= mn_reward;
-				if(fDebug)LogPrintf("CreateNewBlock(): VTX[%u].vout[%u].nValue=%u AFTER MN\n", reward_tx_idx,reward_out_idx,txReward.vout[reward_out_idx].nValue);
+            if (fDebug) LogPrintf("CreateNewBlock(): VTX[%u].vout[%u].nValue=%u AFTER MN\n", reward_tx_idx,reward_out_idx,txReward.vout[reward_out_idx].nValue);
 
             pblock->vtx[reward_tx_idx] = txReward;
         }
@@ -429,6 +429,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         CValidationState state;
         if (!TestBlockValidity(state, *pblock, pindexPrev, false, false)) {
             LogPrintf("CreateNewBlock() : TestBlockValidity failed\n");
+            // Something like TxToJSON(pblock->vtx[0]) and TxToJSON(pblock->vtx[1]) would be ideal here.
             mempool.clear();
             return nullptr;
         }
