@@ -523,6 +523,8 @@ bool ProcessBlockFound(CBlock* pblock, CWallet& wallet, CReserveKey& reservekey)
 }
 
 bool fGenerateBitcoins = false;
+bool fMintableCoins = false;
+int nMintableLastCheck = 0;
 
 // ***TODO*** that part changed in bitcoin, we are using a mix with old one here for now
 
@@ -536,11 +538,8 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
     CReserveKey reservekey(pwallet);
     unsigned int nExtraNonce = 0;
 
-    //control the amount of times the client will check for mintable coins
-    static bool fMintableCoins = false;
-    static int nMintableLastCheck = 0;
-
-    if (fProofOfStake && (GetTime() - nMintableLastCheck > 5 * 60)) // 5 minute check time
+    // do an initial check
+    if (fProofOfStake && !nMintableLastCheck)
     {
         nMintableLastCheck = GetTime();
         fMintableCoins = pwallet->MintableCoins();
@@ -549,23 +548,27 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
     while (fGenerateBitcoins || fProofOfStake) {
         if (fProofOfStake) {
             if (chainActive.Tip()->nHeight < Params().LAST_POW_BLOCK()) {
-                MilliSleep(5000);
+                // The last POW block hasn't even been mined yet.
+                MilliSleep(Params().TargetSpacing() * 1000);
                 continue;
+            }
+
+            // Periodically check if we have mintable coins
+            if (GetTime() - nMintableLastCheck > 1 * 60) // 1 minute check time
+            {
+                nMintableLastCheck = GetTime();
+                fMintableCoins = pwallet->MintableCoins();
             }
 
             while (vNodes.empty() || pwallet->IsLocked() || !fMintableCoins || (pwallet->GetBalance() > 0 && nReserveBalance >= pwallet->GetBalance()) || !masternodeSync.IsSynced()) {
                 nLastCoinStakeSearchInterval = 0;
-                // Do a separate 1 minute check here to ensure fMintableCoins is updated
-                if (!fMintableCoins) {
-                    if (GetTime() - nMintableLastCheck > 1 * 60) // 1 minute check time
-                    {
-                        nMintableLastCheck = GetTime();
-                        fMintableCoins = pwallet->MintableCoins();
-                    }
-                }
                 MilliSleep(5000);
-                if (!fGenerateBitcoins && !fProofOfStake)
-                    continue;
+                // recheck if we have mintable coins, while waiting to be stakable.
+                if (GetTime() - nMintableLastCheck > 1 * 60) // 1 minute check time
+                {
+                    nMintableLastCheck = GetTime();
+                    fMintableCoins = pwallet->MintableCoins();
+                }
             }
 
             if (mapHashedBlocks.count(chainActive.Tip()->nHeight)) //search our map of hashed blocks, see if bestblock has been hashed yet
@@ -575,6 +578,13 @@ void BitcoinMiner(CWallet* pwallet, bool fProofOfStake)
                     MilliSleep(5000);
                     continue;
                 }
+            }
+        } else { // PoW
+            if (chainActive.Tip()->nHeight > Params().LAST_POW_BLOCK()) {
+                // If we're out of the PoW phase, exit the PoW mining threads
+                LogPrintf("BitcoinMiner(): Exiting Proof of Work Mining Thread at height: %d\n",
+                          chainActive.Tip()->nHeight );
+                return;
             }
         }
 
