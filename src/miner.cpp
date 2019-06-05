@@ -470,6 +470,21 @@ CBlockTemplate* CreateNewBlockWithKey(CReserveKey& reservekey, CWallet* pwallet,
     if (!reservekey.GetReservedKey(pubkey))
         return NULL;
 
+    const int nHeightNext = chainActive.Tip()->nHeight + 1;
+    static int nLastPOWBlock = Params().LAST_POW_BLOCK();
+    
+    // If we're building a premature PoS block, abort.
+    if ((nHeightNext <= nLastPOWBlock) && fProofOfStake) {
+        LogPrintf("CreateNewBlockWithKey(): Aborting PoS block creation during PoW phase\n");
+        return NULL;
+    }
+
+    // If we're building a late PoW block, abort.
+    if ((nHeightNext > nLastPOWBlock) && !fProofOfStake) {
+        LogPrintf("CreateNewBlockWithKey(): Aborting PoW block creation during PoS phase\n");
+        return NULL;
+    }
+    
     CScript scriptPubKey = CScript() << ToByteVector(pubkey) << OP_CHECKSIG;
     return CreateNewBlock(scriptPubKey, pwallet, fProofOfStake);
 }
