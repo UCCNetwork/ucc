@@ -1934,7 +1934,6 @@ bool CScriptCheck::operator()()
 
 bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& inputs, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks)
 {
-    bool bPoWphase = (pindex->nHeight <= Params().LAST_POW_BLOCK()); // XXX - debug temporary
     if (!tx.IsCoinBase()) {
         if (pvChecks)
             pvChecks->reserve(tx.vin.size());
@@ -1955,10 +1954,10 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
             const CCoins* coins = inputs.AccessCoins(prevout.hash);
             assert(coins);
 
-            if (!bPoWphase) LogPrintf("CheckInputs(): checking vin[%d]\n", i);
+            LogPrintf("CheckInputs(): checking vin[%d]\n", i);
             // If prev is coinbase, check that it's matured
             if (coins->IsCoinBase() || coins->IsCoinStake()) {
-                if (!bPoWphase) LogPrintf("CheckInputs(): vin[%d] confirming maturity\n", i);
+                LogPrintf("CheckInputs(): vin[%d] confirming maturity\n", i);
                 if (nSpendHeight - coins->nHeight < Params().COINBASE_MATURITY())
                     return state.Invalid(
                         error("CheckInputs() : tried to spend coinbase at depth %d, coinstake=%d", nSpendHeight - coins->nHeight, coins->IsCoinStake()),
@@ -1973,7 +1972,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
         }
 
         if (!tx.IsCoinStake()) {
-            if (!bPoWphase) LogPrintf("CheckInputs(): vin[%d] is not a coinstake\n", i);
+            LogPrintf("CheckInputs(): vin[%d] is not a coinstake\n", i);
             if (nValueIn < tx.GetValueOut())
                 return state.DoS(100, error("CheckInputs() : %s value in (%s) < value out (%s)", tx.GetHash().ToString(), FormatMoney(nValueIn), FormatMoney(tx.GetValueOut())),
                     REJECT_INVALID, "bad-txns-in-belowout");
@@ -2001,7 +2000,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
                 const CCoins* coins = inputs.AccessCoins(prevout.hash);
                 assert(coins);
 
-                if (!bPoWphase) LogPrintf("CheckInputs(): verifying signature on vin[%d] %s\n", i, tx->GetHash().ToString());
+                LogPrintf("CheckInputs(): verifying signature on vin[%d] %s\n", i, tx->GetHash().ToString());
 
                 // Verify signature
                 CScriptCheck check(*coins, tx, i, flags, cacheStore);
