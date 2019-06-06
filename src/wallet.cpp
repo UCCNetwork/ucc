@@ -2446,38 +2446,32 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, uint32_t nTime, unsigne
         return false;
 
     // Calculate reward
-    CAmount blockReward = GetBlockValue(chainActive.Height()+1) + nFees;
+//    CAmount blockReward = GetBlockValue(chainActive.Height()+1) + nFees;
+    CAmount blockReward = GetBlockValue(chainActive.Height() + 1);
 
-	  auto vDevReward  = blockReward * Params().GetDevFee() / 100;
+    auto vDevReward  = blockReward * Params().GetDevFee() / 100;
     auto vFundReward = blockReward * Params().GetFundFee() / 100;
     
     CScript scriptDevPubKeyIn  = CScript{} << Params().xUCCDevKey() << OP_CHECKSIG;
     CScript scriptFundPubKeyIn = CScript{} << Params().xUCCFundKey() << OP_CHECKSIG;
 	
-	  txNew.vout.emplace_back(vDevReward, scriptDevPubKeyIn);
+    txNew.vout.emplace_back(vDevReward, scriptDevPubKeyIn);
     txNew.vout.emplace_back(vFundReward, scriptFundPubKeyIn);
 
-	  blockReward -= vDevReward;
-	  blockReward -= vFundReward;
+    blockReward -= vDevReward;
+    blockReward -= vFundReward;
  
-    // after fee add block reward to credit
+    blockReward -= masternodePayments.FillBlockPayee(txNew, blockReward, true);
+
+    // after payments; add block reward to credit
     nCredit += blockReward;
-
-    // get masternode payment and substract from credit
-    CAmount masternodesFund = masternodePayments.FillBlockPayee(txNew, blockReward, true);
-    nCredit -= masternodesFund;
-
-    CAmount nBlockValue = GetBlockValue(pIndex0->nHeight+1);
 
     //presstab HyperStake - calculate the total size of our new output including the stake reward so that we can use it to decide whether to split the stake outputs
     if (nCredit / 2 > nStakeSplitThreshold * COIN) {
-        // Put all the reward value in the second vout, so we don't run the risk of
-        // a small stake split threshold and more than 50% of blockvalue paid out elsewhere,
-        // resulting in a negative (thus "really really big") vout[2]
         txNew.vout[1].nValue = (nCredit / 2 / CENT) * CENT;
-        txNew.vout.emplace_back(nCredit +nBlockValue - txNew.vout[1].nValue, txNew.vout[1].scriptPubKey);
+        txNew.vout.emplace_back(nCredit - txNew.vout[1].nValue, txNew.vout[1].scriptPubKey);
     } else {
-        txNew.vout[1].nValue = nCredit + nBlockValue;
+        txNew.vout[1].nValue = nCredit;
     }
 
     // Sign
