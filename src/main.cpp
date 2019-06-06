@@ -1676,10 +1676,6 @@ CAmount GetSeeSaw(const CAmount& blockValue, int nHeight, bool bDrift)
         nMasternodeCountLevel3 = mnodeman.size(3);
     }
 
-    if (nHeight <= Params().LAST_POW_BLOCK()) {
-       LogPrintf("GetSeeSaw() called during POW; strange things may occur!");
-    }
-
     int64_t nMoneySupply = chainActive.Tip()->nMoneySupply;
     int64_t mNodeCoins;
 
@@ -1938,6 +1934,7 @@ bool CScriptCheck::operator()()
 
 bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsViewCache& inputs, bool fScriptChecks, unsigned int flags, bool cacheStore, std::vector<CScriptCheck>* pvChecks)
 {
+    bool bPoWphase = (pindex->nHeight <= Params().LAST_POW_BLOCK()); // XXX - debug temporary
     if (!tx.IsCoinBase()) {
         if (pvChecks)
             pvChecks->reserve(tx.vin.size());
@@ -1958,8 +1955,10 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
             const CCoins* coins = inputs.AccessCoins(prevout.hash);
             assert(coins);
 
+            if (!bPoWphase) LogPrintf("CheckInputs(): checking vin[%d]\n", i);
             // If prev is coinbase, check that it's matured
             if (coins->IsCoinBase() || coins->IsCoinStake()) {
+                if (!bPoWphase) LogPrintf("CheckInputs(): vin[%d] confirming maturity\n", i);
                 if (nSpendHeight - coins->nHeight < Params().COINBASE_MATURITY())
                     return state.Invalid(
                         error("CheckInputs() : tried to spend coinbase at depth %d, coinstake=%d", nSpendHeight - coins->nHeight, coins->IsCoinStake()),
@@ -1974,6 +1973,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
         }
 
         if (!tx.IsCoinStake()) {
+            if (!bPoWphase) LogPrintf("CheckInputs(): vin[%d] is not a coinstake\n", i);
             if (nValueIn < tx.GetValueOut())
                 return state.DoS(100, error("CheckInputs() : %s value in (%s) < value out (%s)", tx.GetHash().ToString(), FormatMoney(nValueIn), FormatMoney(tx.GetValueOut())),
                     REJECT_INVALID, "bad-txns-in-belowout");
@@ -2000,6 +2000,8 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
                 const COutPoint& prevout = tx.vin[i].prevout;
                 const CCoins* coins = inputs.AccessCoins(prevout.hash);
                 assert(coins);
+
+                if (!bPoWphase) LogPrintf("CheckInputs(): verifying signature on vin[%d] %s\n", i, tx->GetHash().ToString());
 
                 // Verify signature
                 CScriptCheck check(*coins, tx, i, flags, cacheStore);
@@ -2165,6 +2167,7 @@ static int64_t nTimeTotal = 0;
 
 bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pindex, CCoinsViewCache& view, bool fJustCheck=false)
 {
+    bool bPoWphase = (pindex->nHeight <= Params().LAST_POW_BLOCK()); // XXX - debug temporary
     AssertLockHeld(cs_main);
     // Check it again in case a previous version let a bad block in
     if (!CheckBlock(block, state, !fJustCheck, !fJustCheck))
@@ -2235,6 +2238,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
     for (unsigned int i = 0; i < block.vtx.size(); i++) {
         const CTransaction& tx = block.vtx[i];
 
+        if (!bPoWphase) LogPrintf("ConnectBlock(): Checking tx[%d]\n", i);
         nInputs += tx.vin.size();
         nSigOps += GetLegacySigOpCount(tx);
         if (nSigOps > MAX_BLOCK_SIGOPS)
@@ -2242,6 +2246,7 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                 REJECT_INVALID, "bad-blk-sigops");
 
         if (!tx.IsCoinBase()) {
+            if (!bPoWphase) LogPrintf("ConnectBlock(): tx[%d] is not coinbase\n", i);
             if (!view.HaveInputs(tx))
                 return state.DoS(100, error("ConnectBlock() : inputs missing/spent"),
                     REJECT_INVALID, "bad-txns-inputs-missingorspent");
@@ -2255,8 +2260,12 @@ bool ConnectBlock(const CBlock& block, CValidationState& state, CBlockIndex* pin
                 return state.DoS(100, error("ConnectBlock() : too many sigops"),
                     REJECT_INVALID, "bad-blk-sigops");
 
-            if (!tx.IsCoinStake())
+            if (!tx.IsCoinStake()) {
+                if (!bPoWphase) LogPrintf("ConnectBlock(): tx[%d] is not coinstake\n", i);
                 nFees += view.GetValueIn(tx) - tx.GetValueOut();
+            } else {
+                if (!bPoWphase) LogPrintf("ConnectBlock(): tx[%d] is coinstake\n", i);
+            }
             nValueIn += view.GetValueIn(tx);
 
             std::vector<CScriptCheck> vChecks;

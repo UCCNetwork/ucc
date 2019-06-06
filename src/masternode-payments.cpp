@@ -102,7 +102,7 @@ CAmount CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, CAmount 
             payee = GetScriptForDestination(winningNode->pubKeyCollateralAddress.GetID());
         }
 
-        CAmount masternodePayment = GetMasternodePayment(pindexPrev->nHeight, mnlevel, block_value);
+        CAmount masternodePayment = GetMasternodePayment(pindexPrev->nHeight+1, mnlevel, block_value);
 
         if(!masternodePayment)
             continue;
