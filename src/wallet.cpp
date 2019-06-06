@@ -2324,7 +2324,7 @@ bool CWallet::CreateTransaction(CScript scriptPubKey, const CAmount& nValue, CWa
 }
 
 // ppcoin: create coin stake transaction
-bool CWallet::CreateCoinStake(const CKeyStore& keystore, uint32_t nTime, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew, unsigned int& nTxNewTime)
+bool CWallet::CreateCoinStake(const CKeyStore& keystore, uint32_t nTime, unsigned int nBits, int64_t nSearchInterval, CMutableTransaction& txNew, unsigned int& nTxNewTime, CAmount nFees)
 {
     // The following split & combine thresholds are important to security
     // Should not be adjusted if you don't understand the consequences

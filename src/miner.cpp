@@ -337,7 +337,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         bool fStakeFound = false;
         if (nSearchTime >= nLastCoinStakeSearchTime) {
             unsigned int nTxNewTime = 0;
-            if (pwallet->CreateCoinStake(*pwallet, pblock->nTime, pblock->nBits, nSearchTime - nLastCoinStakeSearchTime, txCoinStake, nTxNewTime)) {
+            if (pwallet->CreateCoinStake(*pwallet, pblock->nTime, pblock->nBits, nSearchTime - nLastCoinStakeSearchTime, txCoinStake, nTxNewTime, nFees)) {
                 pblock->nTime = nTxNewTime;
 
                 LogPrintf("CreateNewBlock() if fProofOfStake: chainActive.Height() = %s \n", chainActive.Height());
