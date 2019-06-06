@@ -29,7 +29,7 @@ CCriticalSection cs_mapMasternodePayeeVotes;
 bool IsBlockValueValid(const CBlock& block, CAmount nExpectedValue, CAmount nMinted)
 {
     CBlockIndex* pindexPrev = chainActive.Tip();
-    if(!pindexPrev) return true;
+    if (!pindexPrev) return true;
 
     int nHeight = 0;
     if (pindexPrev->GetBlockHash() == block.hashPrevBlock) {
@@ -107,19 +107,9 @@ CAmount CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, CAmount 
         if(!masternodePayment)
             continue;
 
-        if (fProofOfStake && (txNew.vout.size() == 1)) {
-            /*
-             * For Proof Of Stake the first vout[0] must be null
-             * Stake reward can be split into many different outputs, so we must
-             * use vout.size() to align with several different cases.
-             * An additional output is appended as the masternode payment
-             */
-            LogPrintf("FillBlockPayee() TX only contained one vout!\n");
-            txNew.vout[0].SetEmpty();
-        }
         txNew.vout.emplace_back(masternodePayment, payee);
 
-	mn_payments_total += masternodePayment;
+        mn_payments_total += masternodePayment;
 
         CTxDestination address1;
         ExtractDestination(payee, address1);
@@ -130,6 +120,7 @@ CAmount CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, CAmount 
     }
 
     return mn_payments_total;
+
 }
 
 int CMasternodePayments::GetMinMasternodePaymentsProto()

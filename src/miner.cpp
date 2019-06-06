@@ -108,44 +108,26 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     txNew.vin.resize(1);
     txNew.vin[0].prevout.SetNull();
     txNew.vout.resize(1);
-    txNew.vout[0].scriptPubKey = scriptPubKeyIn;
+    txNew.vout[0].SetEmpty();
+
+    //LogPrintf("CreateNewBlock() : chainActive.Height() = %s \n", chainActive.Height());
+    if (chainActive.Height() >= Params().LAST_POW_BLOCK()) {
+      txNew.vout[0].scriptPubKey = scriptPubKeyIn;
+
+    }
+
     pblock->vtx.push_back(txNew);
+
     pblocktemplate->vTxFees.push_back(-1);   // updated at end
     pblocktemplate->vTxSigOps.push_back(-1); // updated at end
 
     // ppcoin: if coinstake available add coinstake tx
     static int64_t nLastCoinStakeSearchTime = GetAdjustedTime(); // only initialized at startup
 
+    CMutableTransaction txCoinStake;
     if (fProofOfStake) {
-        boost::this_thread::interruption_point();
-        pblock->nTime = GetAdjustedTime();
-
-		{
-            LOCK(cs_main);
-            CBlockIndex* pindexPrev = chainActive.Tip();
-            pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
-        }
-
-        CMutableTransaction txCoinStake;
-        int64_t nSearchTime = pblock->nTime; // search to current time
-        bool fStakeFound = false;
-        if (nSearchTime >= nLastCoinStakeSearchTime) {
-            unsigned int nTxNewTime = 0;
-            if (pwallet->CreateCoinStake(*pwallet, pblock->nTime, pblock->nBits, nSearchTime - nLastCoinStakeSearchTime, txCoinStake, nTxNewTime)) {
-                pblock->nTime = nTxNewTime;
-                pblock->vtx[0].vout[0].SetEmpty();
-                pblock->vtx.push_back(CTransaction(txCoinStake));
-                fStakeFound = true;
-                if (fDebug) LogPrint("staking", "CreateNewBlock(): stake found! vout size=%d\n", pblock->vtx[1].vout.size());
-            }
-            nLastCoinStakeSearchInterval = nSearchTime - nLastCoinStakeSearchTime;
-            nLastCoinStakeSearchTime = nSearchTime;
-        }
-
-        if (!fStakeFound) {
-            if (fDebug) LogPrint("staking", "CreateNewBlock(): stake not found\n");
-            return NULL;
-        }
+        pblock->vtx[0].vout[0].SetEmpty();
+        pblock->vtx.push_back(CTransaction(txCoinStake));
     }
 
     // Largest block you're willing to create:
@@ -167,11 +149,17 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
     // Collect memory pool transactions into the block
     CAmount nFees = 0;
 
+    int nHeight;
+    uint64_t nBlockSize = 1000;
+    uint64_t nBlockTx = 0;
+    int nBlockSigOps = 100;
+    bool fSortedByFee = (nBlockPrioritySize <= 0);
+    CBlockIndex* pindexPrev;
     {
         LOCK2(cs_main, mempool.cs);
 
-        CBlockIndex* pindexPrev = chainActive.Tip();
-        const int nHeight = pindexPrev->nHeight + 1;
+        pindexPrev = chainActive.Tip();
+        nHeight = pindexPrev->nHeight + 1;
         CCoinsViewCache view(pcoinsTip);
 
         // Priority order to process transactions
@@ -249,11 +237,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         }
 
         // Collect transactions into block
-        uint64_t nBlockSize = 1000;
-        uint64_t nBlockTx = 0;
-        int nBlockSigOps = 100;
-        bool fSortedByFee = (nBlockPrioritySize <= 0);
-
         TxPriorityCompare comparer(fSortedByFee);
         std::make_heap(vecPriority.begin(), vecPriority.end(), comparer);
 
@@ -340,22 +323,41 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
                 }
             }
         }
+    }
 
-        CAmount block_value = GetBlockValue(nHeight);
-		
-        if (!fProofOfStake) {
-            UpdateTime(pblock, pindexPrev);
-            txNew.vout[0].nValue       = block_value + nFees;
-            txNew.vout[0].scriptPubKey = scriptPubKeyIn;
-            txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
+	txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
+	CAmount block_value = GetBlockValue(nHeight);
+	if (nHeight == 1)
+        txNew.blob = "Generate Premine Tx";
+    // Compute final transaction.
+    if (fProofOfStake) {
+        boost::this_thread::interruption_point();
+        pblock->nTime = GetAdjustedTime();
+        pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
+        int64_t nSearchTime = pblock->nTime; // search to current time
+        bool fStakeFound = false;
+        if (nSearchTime >= nLastCoinStakeSearchTime) {
+            unsigned int nTxNewTime = 0;
+            if (pwallet->CreateCoinStake(*pwallet, pblock->nTime, pblock->nBits, nSearchTime - nLastCoinStakeSearchTime, txCoinStake, nTxNewTime)) {
+                pblock->nTime = nTxNewTime;
+
+                LogPrintf("CreateNewBlock() if fProofOfStake: chainActive.Height() = %s \n", chainActive.Height());
+                pblock->vtx[1] = CTransaction(txCoinStake);
+                fStakeFound = true;
+            }
+            nLastCoinStakeSearchInterval = nSearchTime - nLastCoinStakeSearchTime;
+            nLastCoinStakeSearchTime = nSearchTime;
         }
 
-        // Compute final coinbase transaction.
-        pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0; // I still don't like this and don't understand it.  It seems the most fishy of everything.
-        if (!fProofOfStake) {
-            pblock->vtx[0] = txNew;
-            pblocktemplate->vTxFees[0] = -nFees;
-        }
+        if (!fStakeFound)
+            return nullptr;
+
+    } else {
+        txNew.vout[0].nValue       = block_value + nFees;
+        txNew.vout[0].scriptPubKey = scriptPubKeyIn;
+        pblocktemplate->vTxFees[0] = -nFees;
+
+        pblock->vtx[0] = txNew;
 
         if(nHeight > 1) { // exclude premine
             if(fDebug) LogPrintf("CreateNewBlock(): is POS? %u\n", fProofOfStake);
@@ -402,37 +404,28 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
             pblock->vtx[reward_tx_idx] = txReward;
         }
+    }
 
-        nLastBlockTx = nBlockTx;
-        nLastBlockSize = nBlockSize;
-        LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
+    nLastBlockTx = nBlockTx;
+    nLastBlockSize = nBlockSize;
+    LogPrintf("CreateNewBlock(): total size %u\n", nBlockSize);
 
-        // Fill in header
-        pblock->hashPrevBlock = pindexPrev->GetBlockHash();
-        if (!fProofOfStake)
-            UpdateTime(pblock, pindexPrev);
-        pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
-        pblock->nNonce = 0;
+    // Fill in header
+    pblock->hashPrevBlock = pindexPrev->GetBlockHash();
+    if (!fProofOfStake)
+        UpdateTime(pblock, pindexPrev);
+    pblock->nBits = GetNextWorkRequired(pindexPrev, pblock);
+    pblock->nNonce = 0;
+    pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
 
-        pblocktemplate->vTxSigOps[0] = GetLegacySigOpCount(pblock->vtx[0]);
-
-        if (fProofOfStake) {
-            unsigned int nExtraNonce = 0;
-            IncrementExtraNonce(pblock, pindexPrev, nExtraNonce);
-            LogPrintf("CPUMiner : proof-of-stake block found %s \n", pblock->GetHash().ToString().c_str());
-            if (!pblock->SignBlock(*pwallet)) {
-                LogPrintf("CreateNewBlock(): Signing new block with UTXO key failed \n");
-                return nullptr;
-            }
-        }
-
-        CValidationState state;
-        if (!TestBlockValidity(state, *pblock, pindexPrev, false, false)) {
-            LogPrintf("CreateNewBlock() : TestBlockValidity failed\n");
-            // Something like TxToJSON(pblock->vtx[0]) and TxToJSON(pblock->vtx[1]) would be ideal here.
-            mempool.clear();
-            return nullptr;
-        }
+    CValidationState state;
+    //LogPrintf("CreateNewBlock() if CValidationState: chainActive.Height() = %s \n", chainActive.Height());
+    if (chainActive.Height() < Params().LAST_POW_BLOCK()) {
+      if (!TestBlockValidity(state, *pblock, pindexPrev, false, false)) {
+          LogPrintf("CreateNewBlock() : TestBlockValidity failed\n");
+          mempool.clear();
+          return NULL;
+      }
     }
 
     return pblocktemplate.release();
