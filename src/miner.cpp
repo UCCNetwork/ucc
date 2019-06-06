@@ -327,8 +327,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
 
 	txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
 	CAmount block_value = GetBlockValue(nHeight);
-	if (nHeight == 1)
-        txNew.blob = "Generate Premine Tx";
+
     // Compute final transaction.
     if (fProofOfStake) {
         boost::this_thread::interruption_point();
