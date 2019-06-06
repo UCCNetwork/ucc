@@ -2449,14 +2449,17 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, uint32_t nTime, unsigne
     // Calculate reward
     const CBlockIndex* pIndex0 = chainActive.Tip();
 
-    nCredit += GetBlockValue(pIndex0->nHeight+1);
+    CAmount nBlockValue = GetBlockValue(pIndex0->nHeight+1);
 
     //presstab HyperStake - calculate the total size of our new output including the stake reward so that we can use it to decide whether to split the stake outputs
     if (nCredit / 2 > nStakeSplitThreshold * COIN) {
+        // Put all the reward value in the second vout, so we don't run the risk of
+        // a small stake split threshold and more than 50% of blockvalue paid out elsewhere,
+        // resulting in a negative (thus "really really big") vout[2]
         txNew.vout[1].nValue = (nCredit / 2 / CENT) * CENT;
-        txNew.vout.push_back(CTxOut(nCredit - txNew.vout[1].nValue, txNew.vout[1].scriptPubKey));
+        txNew.vout.push_back(CTxOut(nCredit +nBlockValue - txNew.vout[1].nValue, txNew.vout[1].scriptPubKey));
     } else {
-        txNew.vout[1].nValue = nCredit;
+        txNew.vout[1].nValue = nCredit + nBlockValue;
     }
 
     // Sign
