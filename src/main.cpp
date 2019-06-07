@@ -1972,7 +1972,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
         }
 
         if (!tx.IsCoinStake()) {
-            LogPrintf("CheckInputs(): tx is not a coinstake: %s\n",tx.getHash().ToString());
+            LogPrintf("CheckInputs(): tx is not a coinstake!: %s\n",tx.GetHash().ToString());
             if (nValueIn < tx.GetValueOut())
                 return state.DoS(100, error("CheckInputs() : %s value in (%s) < value out (%s)", tx.GetHash().ToString(), FormatMoney(nValueIn), FormatMoney(tx.GetValueOut())),
                     REJECT_INVALID, "bad-txns-in-belowout");
