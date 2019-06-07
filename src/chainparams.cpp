@@ -303,14 +303,14 @@ public:
 
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
-        genesis.nTime = 1559125649;
-        genesis.nNonce = 884877;
+        genesis.nTime = 1559935359;
+        genesis.nNonce = 259558;
 
 	//MineGenesis(genesis);
 
         hashGenesisBlock = genesis.GetHash();
 
-        assert(hashGenesisBlock == uint256("00000bd6961045157f04144acb30a3d8e012f0a8171b63fa11e3f06fef627a3d"));
+        assert(hashGenesisBlock == uint256("00000ede1b9a2371e08747dbca25dc9f6a1bc6da2f71557433e443e192abfc25"));
 
         vFixedSeeds.clear();
         vSeeds.clear();
