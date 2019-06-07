@@ -69,7 +69,7 @@ bool fCheckBlockIndex = false;
 unsigned int nCoinCacheSize = 5000;
 bool fAlerts = DEFAULT_ALERTS;
 
-unsigned int nStakeMinAge = 60 * 60;
+unsigned int nStakeMinAge = 60 * 60; // 1 hour
 int64_t nReserveBalance = 0;
 
 /** Fees smaller than this (in uucc) are considered zero fee (for relaying and mining)
@@ -913,7 +913,7 @@ int GetIXConfirmations(uint256 nTXHash)
     return 0;
 }
 
-// ppcoin: total coin age spent in transaction, in the unit of coin-days.
+// total coin age spent in transaction, in the unit of coin-days.
 // Only those coins meeting minimum age requirement counts. As those
 // transactions not in main chain are not currently indexed so we
 // might not find out about their coin age. Older transactions are
@@ -1972,7 +1972,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
         }
 
         if (!tx.IsCoinStake()) {
-            LogPrintf("CheckInputs(): tx is not a coinstake\n");
+            LogPrintf("CheckInputs(): tx is not a coinstake: %s\n",tx.getHash().ToString());
             if (nValueIn < tx.GetValueOut())
                 return state.DoS(100, error("CheckInputs() : %s value in (%s) < value out (%s)", tx.GetHash().ToString(), FormatMoney(nValueIn), FormatMoney(tx.GetValueOut())),
                     REJECT_INVALID, "bad-txns-in-belowout");
@@ -2000,7 +2000,7 @@ bool CheckInputs(const CTransaction& tx, CValidationState& state, const CCoinsVi
                 const CCoins* coins = inputs.AccessCoins(prevout.hash);
                 assert(coins);
 
-                LogPrintf("CheckInputs(): verifying signature on vin[%d] %s\n", i, tx->GetHash().ToString());
+                LogPrintf("CheckInputs(): verifying signature on vin[%d] %s\n", i, tx.GetHash().ToString());
 
                 // Verify signature
                 CScriptCheck check(*coins, tx, i, flags, cacheStore);
