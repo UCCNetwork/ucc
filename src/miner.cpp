@@ -368,7 +368,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             txNew.vout.emplace_back(vFundReward, scriptFundPubKeyIn);
 
             // Add Masternode Payments
-            auto mn_reward = masternodePayments.FillBlockPayee(txReward, block_value, false);
+            auto mn_reward = masternodePayments.FillBlockPayee(txNew, block_value, false);
 
             // Deduct from the mining reward
             txNew.vout[0].nValue -= (vDevReward + vFundReward + mn_reward);
