@@ -325,9 +325,6 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
         }
     }
 
-	  txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
-	  CAmount block_value = GetBlockValue(nHeight);
-
     // Compute final transaction.
     if (fProofOfStake) {
         boost::this_thread::interruption_point();
@@ -341,6 +338,7 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
                 pblock->nTime = nTxNewTime;
 
                 LogPrintf("CreateNewBlock() if fProofOfStake: chainActive.Height() = %s \n", chainActive.Height());
+                pblock->vtx[0].vin[0].scriptSig = CScript() << nHeight << OP_0;  // fixup empty coinbase tx
                 pblock->vtx[1] = CTransaction(txCoinStake);
                 fStakeFound = true;
             }
@@ -352,6 +350,9 @@ CBlockTemplate* CreateNewBlock(const CScript& scriptPubKeyIn, CWallet* pwallet, 
             return nullptr;
 
     } else {
+        txNew.vin[0].scriptSig = CScript() << nHeight << OP_0;
+        CAmount block_value = GetBlockValue(nHeight);
+
         txNew.vout[0].nValue       = block_value + nFees;
         txNew.vout[0].scriptPubKey = scriptPubKeyIn;
         pblocktemplate->vTxFees[0] = -nFees;
