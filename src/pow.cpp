@@ -35,7 +35,7 @@ unsigned int GetNextWorkRequired(const CBlockIndex* pindexLast, const CBlockHead
         return Params().StartWork().GetCompact();
     }
 
-    if (pindexLast->nHeight > Params().LAST_POW_BLOCK()) {
+    if (pindexLast->nHeight >= Params().LAST_POW_BLOCK()) {
         uint256 bnTargetLimit = (~uint256(0) >> 24);
         int64_t nTargetSpacing = 60;
         int64_t nTargetTimespan = 60 * 40;
@@ -127,8 +127,10 @@ bool CheckProofOfWork(uint256 hash, unsigned int nBits)
         return error("CheckProofOfWork() : nBits below minimum work");
 
     // Check proof of work matches claimed amount
-    if (hash > bnTarget)
+    if (hash > bnTarget) {
+        LogPrintf("CheckProofOfWork(): hash: %s, nbits: %x, bnTarget: %s\n", hash.GetHex(), nBits, bnTarget.GetHex());
         return error("CheckProofOfWork() : hash doesn't match nBits");
+    }
 
     return true;
 }

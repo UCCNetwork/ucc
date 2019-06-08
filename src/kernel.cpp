@@ -276,6 +276,8 @@ bool GetKernelStakeModifier(uint256 hashBlockFrom, uint64_t& nStakeModifier, int
 uint256 stakeHash(unsigned int nTimeTx, CDataStream ss, unsigned int prevoutIndex, uint256 prevoutHash, unsigned int nTimeBlockFrom)
 {
     //UCC will hash in the transaction hash and the index number in order to make sure each hash is unique
+    LogPrintf("stakehash: nTimeTx %d, prevoutIndex: %d, nTimeBlockFrom: %d\n\tprevoutHash: %s\n",
+              nTimeTx, prevoutIndex, nTimeBlockFrom, prevoutHash.GetHex());
     ss << nTimeBlockFrom << prevoutIndex << prevoutHash << nTimeTx;
     return Hash(ss.begin(), ss.end());
 }
@@ -285,6 +287,10 @@ bool stakeTargetHit(uint256 hashProofOfStake, int64_t nValueIn, uint256 bnTarget
 {
     //get the stake weight - weight is equal to coin amount
     uint256 bnCoinDayWeight = uint256(nValueIn) / 100;
+
+    LogPrintf("Checking stake target hit: \n\tHashPoS: %s\n\tbnCoinDayWeight: %s\n\tbnTargetPerCoinDay: %s\n\tTarget: %s\n",
+              hashProofOfStake.GetHex(), bnCoinDayWeight.GetHex(), bnTargetPerCoinDay.GetHex(),
+              (bnCoinDayWeight*bnTargetPerCoinDay).GetHex());
 
     // Now check if proof-of-stake hash meets target protocol
     return (uint256(hashProofOfStake) < bnCoinDayWeight * bnTargetPerCoinDay);
@@ -306,6 +312,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock blockFrom, const CTra
     //grab difficulty
     uint256 bnTargetPerCoinDay;
     bnTargetPerCoinDay.SetCompact(nBits);
+    LogPrintf("CheckStakeKernelHash(): nbits: %x, bnTargetCoinPerDay: %s\n", nBits, bnTargetPerCoinDay.GetHex());
 
     //grab stake modifier
     uint64_t nStakeModifier = 0;
@@ -323,6 +330,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock blockFrom, const CTra
     //if wallet is simply checking to make sure a hash is valid
     if (fCheck) {
         hashProofOfStake = stakeHash(nTimeTx, ss, prevout.n, prevout.hash, nTimeBlockFrom);
+        LogPrintf("CheckStakeKernelHash(): checking stake hash\n");
         return stakeTargetHit(hashProofOfStake, nValueIn, bnTargetPerCoinDay);
     }
 
@@ -364,6 +372,7 @@ bool CheckStakeKernelHash(unsigned int nBits, const CBlock blockFrom, const CTra
 
     mapHashedBlocks.clear();
     mapHashedBlocks[chainActive.Tip()->nHeight] = GetTime(); //store a time stamp of when we last hashed on this block
+    LogPrintf("CheckStakeKernelHash(): nHeight=%d, fSuccess=%d\n", chainActive.Tip()->nHeight, fSuccess);
     return fSuccess;
 }
 
