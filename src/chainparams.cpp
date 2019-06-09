@@ -293,24 +293,24 @@ public:
         nToCheckBlockUpgradeMajority = 100;
         nMinerThreads = 0;
         nTargetSpacing = 1 * 10;  // UCC: 10 seconds
-        nLastPOWBlock = 1500;
+        nLastPOWBlock = 1000;
         nMaturity = 15;
         nMasternodePercentDrift = 4;
         nModifierUpdateBlock = std::numeric_limits<decltype(nModifierUpdateBlock)>::max();
         nMaxMoneyOut = 1000000000 * COIN;
 
-	nStartMasternodePaymentsBlock = 1001;
+	nStartMasternodePaymentsBlock = 300;
 
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
-        genesis.nTime = 1559935359;
-        genesis.nNonce = 259558;
+        genesis.nTime = 1560108283;
+        genesis.nNonce = 3259884;
 
-	//MineGenesis(genesis);
+//	MineGenesis(genesis);
 
         hashGenesisBlock = genesis.GetHash();
 
-        assert(hashGenesisBlock == uint256("00000ede1b9a2371e08747dbca25dc9f6a1bc6da2f71557433e443e192abfc25"));
+        assert(hashGenesisBlock == uint256("000005efb3d5bbada21a9d483432af502b100a5ffb045349a900c9acc17cb320"));
 
         vFixedSeeds.clear();
         vSeeds.clear();
