@@ -22,8 +22,6 @@ uint32_t Hash(const char* data, size_t n, uint32_t seed) {
   const char* limit = data + n;
   uint32_t h = seed ^ (n * m);
 
-  printf("Hash: %s, %d, %d\n", data, n, seed);
-
   // Pick up four bytes at a time
   while (data + 4 <= limit) {
     uint32_t w = DecodeFixed32(data);
