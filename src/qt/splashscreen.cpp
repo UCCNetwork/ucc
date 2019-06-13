@@ -27,21 +27,21 @@
 SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle* networkStyle) : QWidget(0, f), curAlignment(0)
 {
     // set reference point, paddings
-    int paddingLeft = 214;
-    int paddingTop = 350;
-    int titleVersionVSpace = 17;
-    int titleCopyrightVSpace = 32;
+    int paddingLeft = 314;
+    int paddingTop = 250;
+    int titleVersionVSpace = 14;
+    int titleCopyrightVSpace = 18;
 
     float fontFactor = 1.0;
 
     // define text to place
-    QString titleText = tr("UCC Core");
-    QString versionText = QString(tr("Version %1")).arg(QString::fromStdString(FormatFullVersion()));
-    QString copyrightTextBtc = QChar(0xA9) + QString(" 2009-2014 ").arg(COPYRIGHT_YEAR) + QString(tr("The Bitcoin Core developers"));
-    QString copyrightTextDash = QChar(0xA9) + QString(" 2014-2015 ").arg(COPYRIGHT_YEAR) + QString(tr("The Dash Core developers"));
-    QString copyrightTextPIVX = QChar(0xA9) + QString(" 2015-2017 ").arg(COPYRIGHT_YEAR) + QString(tr("The PIVX Core developers"));
-    QString copyrightTextXDNA = QChar(0xA9) + QString(" 2017-2018 ").arg(COPYRIGHT_YEAR) + QString(tr("The XDNA Core developers"));
-    QString copyrightTextUCC = QChar(0xA9) + QString(" 2018-2018 ").arg(COPYRIGHT_YEAR) + QString(tr("The UCC developers"));
+    QString titleText = tr("WALLET");
+    QString versionText = QString(tr("v.  %1")).arg(QString::fromStdString(FormatFullVersion()));
+    QString copyrightTextBtc = QChar(0xA9) + QString(" 2009-2019 ").arg(COPYRIGHT_YEAR) + QString(tr("The Bitcoin Core developers"));
+    QString copyrightTextDash = QChar(0xA9) + QString(" 2014-2019 ").arg(COPYRIGHT_YEAR) + QString(tr("The Dash Core developers"));
+    QString copyrightTextPIVX = QChar(0xA9) + QString(" 2015-2019 ").arg(COPYRIGHT_YEAR) + QString(tr("The PIVX Core developers"));
+    QString copyrightTextXDNA = QChar(0xA9) + QString(" 2017-2019 ").arg(COPYRIGHT_YEAR) + QString(tr("The XDNA Core developers"));
+    QString copyrightTextUCC = QChar(0xA9) + QString(" 2018-2019 ").arg(COPYRIGHT_YEAR) + QString(tr("The UCC developers"));
     QString titleAddText = networkStyle->getTitleAddText();
 
     QString font = QApplication::font().toString();
@@ -54,7 +54,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle* networkStyle) 
     pixPaint.setPen(QColor(0, 0, 0));
 
     // check font size and drawing with
-    pixPaint.setFont(QFont(font, 18 * fontFactor));
+    pixPaint.setFont(QFont(font, 12 * fontFactor));
     QFontMetrics fm = pixPaint.fontMetrics();
     int titleTextWidth = fm.width(titleText);
     if (titleTextWidth > 160) {
@@ -62,12 +62,12 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle* networkStyle) 
         fontFactor = 0.75;
     }
 
-    pixPaint.setFont(QFont(font, 18 * fontFactor));
+    pixPaint.setFont(QFont(font, 12 * fontFactor));
     fm = pixPaint.fontMetrics();
     //titleTextWidth = fm.width(titleText);
     pixPaint.drawText(paddingLeft, paddingTop, titleText);
 
-    pixPaint.setFont(QFont(font, 12 * fontFactor));
+    pixPaint.setFont(QFont(font, 10 * fontFactor));
     pixPaint.drawText(paddingLeft, paddingTop + titleVersionVSpace, versionText);
 
     // draw copyright stuff
