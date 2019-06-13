@@ -27,10 +27,9 @@
 SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle* networkStyle) : QWidget(0, f), curAlignment(0)
 {
     // set reference point, paddings
-    int paddingLeft = 314;
-    int paddingTop = 250;
-    int titleVersionVSpace = 14;
-    int titleCopyrightVSpace = 18;
+    int paddingLeft = 270;
+    int paddingTop = 270;
+    int titleCopyrightVSpace = 24;
 
     float fontFactor = 1.0;
 
@@ -62,13 +61,13 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle* networkStyle) 
         fontFactor = 0.75;
     }
 
-    pixPaint.setFont(QFont(font, 12 * fontFactor));
+    pixPaint.setFont(QFont(font, 10 * fontFactor));
     fm = pixPaint.fontMetrics();
     //titleTextWidth = fm.width(titleText);
-    pixPaint.drawText(paddingLeft, paddingTop, titleText);
+    pixPaint.drawText(paddingLeft + 90, paddingTop, titleText);
 
-    pixPaint.setFont(QFont(font, 10 * fontFactor));
-    pixPaint.drawText(paddingLeft, paddingTop + titleVersionVSpace, versionText);
+    pixPaint.setFont(QFont(font, 8 * fontFactor));
+    pixPaint.drawText(paddingLeft + 150, paddingTop, versionText);
 
     // draw copyright stuff
     pixPaint.setFont(QFont(font, 8 * fontFactor));
