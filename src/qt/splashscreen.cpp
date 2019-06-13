@@ -28,14 +28,14 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle* networkStyle) 
 {
     // set reference point, paddings
     int paddingLeft = 270;
-    int paddingTop = 270;
+    int paddingTop = 240;
     int titleCopyrightVSpace = 24;
 
     float fontFactor = 1.0;
 
     // define text to place
     QString titleText = tr("WALLET");
-    QString versionText = QString(tr("v.  %1")).arg(QString::fromStdString(FormatFullVersion()));
+    QString versionText = QString(tr("%1")).arg(QString::fromStdString(FormatFullVersion()));
     QString copyrightTextBtc = QChar(0xA9) + QString(" 2009-2019 ").arg(COPYRIGHT_YEAR) + QString(tr("The Bitcoin Core developers"));
     QString copyrightTextDash = QChar(0xA9) + QString(" 2014-2019 ").arg(COPYRIGHT_YEAR) + QString(tr("The Dash Core developers"));
     QString copyrightTextPIVX = QChar(0xA9) + QString(" 2015-2019 ").arg(COPYRIGHT_YEAR) + QString(tr("The PIVX Core developers"));
@@ -67,7 +67,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle* networkStyle) 
     pixPaint.drawText(paddingLeft + 90, paddingTop, titleText);
 
     pixPaint.setFont(QFont(font, 8 * fontFactor));
-    pixPaint.drawText(paddingLeft + 150, paddingTop, versionText);
+    pixPaint.drawText(paddingLeft + 170, paddingTop, versionText);
 
     // draw copyright stuff
     pixPaint.setFont(QFont(font, 8 * fontFactor));
@@ -84,7 +84,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle* networkStyle) 
         pixPaint.setFont(boldFont);
         fm = pixPaint.fontMetrics();
         int titleAddTextWidth = fm.width(titleAddText);
-        pixPaint.drawText(pixmap.width() - titleAddTextWidth - 5, pixmap.height() - 10, titleAddText);
+        pixPaint.drawText(pixmap.width() - titleAddTextWidth - 5, pixmap.height() - 5, titleAddText);
     }
 
     pixPaint.end();
