@@ -27,8 +27,8 @@
 SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle* networkStyle) : QWidget(0, f), curAlignment(0)
 {
     // set reference point, paddings
-    int paddingLeft = 14;
-    int paddingTop = 450;
+    int paddingLeft = 214;
+    int paddingTop = 350;
     int titleVersionVSpace = 17;
     int titleCopyrightVSpace = 32;
 
@@ -51,10 +51,10 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle* networkStyle) 
     pixmap = networkStyle->getSplashImage();
   
     QPainter pixPaint(&pixmap);
-    pixPaint.setPen(QColor(255, 255, 255));
+    pixPaint.setPen(QColor(0, 0, 0));
 
     // check font size and drawing with
-    pixPaint.setFont(QFont(font, 28 * fontFactor));
+    pixPaint.setFont(QFont(font, 18 * fontFactor));
     QFontMetrics fm = pixPaint.fontMetrics();
     int titleTextWidth = fm.width(titleText);
     if (titleTextWidth > 160) {
@@ -62,25 +62,25 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle* networkStyle) 
         fontFactor = 0.75;
     }
 
-    pixPaint.setFont(QFont(font, 28 * fontFactor));
+    pixPaint.setFont(QFont(font, 18 * fontFactor));
     fm = pixPaint.fontMetrics();
     //titleTextWidth = fm.width(titleText);
     pixPaint.drawText(paddingLeft, paddingTop, titleText);
 
-    pixPaint.setFont(QFont(font, 15 * fontFactor));
+    pixPaint.setFont(QFont(font, 12 * fontFactor));
     pixPaint.drawText(paddingLeft, paddingTop + titleVersionVSpace, versionText);
 
     // draw copyright stuff
-    pixPaint.setFont(QFont(font, 10 * fontFactor));
+    pixPaint.setFont(QFont(font, 8 * fontFactor));
     pixPaint.drawText(paddingLeft, paddingTop + titleCopyrightVSpace, copyrightTextBtc);
-    pixPaint.drawText(paddingLeft, paddingTop + titleCopyrightVSpace + 12, copyrightTextDash);
-    pixPaint.drawText(paddingLeft, paddingTop + titleCopyrightVSpace + 24, copyrightTextPIVX);
-    pixPaint.drawText(paddingLeft, paddingTop + titleCopyrightVSpace + 36, copyrightTextXDNA);
-    pixPaint.drawText(paddingLeft, paddingTop + titleCopyrightVSpace + 48, copyrightTextUCC);
+    pixPaint.drawText(paddingLeft, paddingTop + titleCopyrightVSpace + 10, copyrightTextDash);
+    pixPaint.drawText(paddingLeft, paddingTop + titleCopyrightVSpace + 20, copyrightTextPIVX);
+    pixPaint.drawText(paddingLeft, paddingTop + titleCopyrightVSpace + 34, copyrightTextXDNA);
+    pixPaint.drawText(paddingLeft, paddingTop + titleCopyrightVSpace + 44, copyrightTextUCC);
 
     // draw additional text if special network
     if (!titleAddText.isEmpty()) {
-        QFont boldFont = QFont(font, 10 * fontFactor);
+        QFont boldFont = QFont(font, 8 * fontFactor);
         boldFont.setWeight(QFont::Bold);
         pixPaint.setFont(boldFont);
         fm = pixPaint.fontMetrics();
