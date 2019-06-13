@@ -74,8 +74,8 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle* networkStyle) 
     pixPaint.drawText(paddingLeft, paddingTop + titleCopyrightVSpace, copyrightTextBtc);
     pixPaint.drawText(paddingLeft, paddingTop + titleCopyrightVSpace + 10, copyrightTextDash);
     pixPaint.drawText(paddingLeft, paddingTop + titleCopyrightVSpace + 20, copyrightTextPIVX);
-    pixPaint.drawText(paddingLeft, paddingTop + titleCopyrightVSpace + 34, copyrightTextXDNA);
-    pixPaint.drawText(paddingLeft, paddingTop + titleCopyrightVSpace + 44, copyrightTextUCC);
+    pixPaint.drawText(paddingLeft, paddingTop + titleCopyrightVSpace + 30, copyrightTextXDNA);
+    pixPaint.drawText(paddingLeft, paddingTop + titleCopyrightVSpace + 40, copyrightTextUCC);
 
     // draw additional text if special network
     if (!titleAddText.isEmpty()) {
@@ -84,7 +84,7 @@ SplashScreen::SplashScreen(Qt::WindowFlags f, const NetworkStyle* networkStyle) 
         pixPaint.setFont(boldFont);
         fm = pixPaint.fontMetrics();
         int titleAddTextWidth = fm.width(titleAddText);
-        pixPaint.drawText(pixmap.width() - titleAddTextWidth - 10, pixmap.height() - 25, titleAddText);
+        pixPaint.drawText(pixmap.width() - titleAddTextWidth - 5, pixmap.height() - 10, titleAddText);
     }
 
     pixPaint.end();
