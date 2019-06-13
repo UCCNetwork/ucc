@@ -1084,7 +1084,7 @@
                       <item row="1" column="0">
                        <widget class="QLabel" name="label_CurrentBlockReward">
                         <property name="text">
-                         <string>Reward | dev+swap fee:</string>
+                         <string>Reward | dev | swap:</string>
                         </property>
                         <property name="alignment">
                          <set>Qt::AlignVCenter</set>

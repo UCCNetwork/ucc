@@ -418,14 +418,15 @@ void OverviewPage::updateBlockChainInfo()
         double BlockReward = GetBlockValue(CurrentBlock);
         double BlockRewarducccoin =  static_cast<double>(BlockReward/COIN);
 		double CurrentDiff = GetDifficulty();
-		double BlockRewardFees = Params().GetDevFee() + Params().GetFundFee();
+		double DevFee = Params().GetDevFee();
+        double FundFee = Params().GetFundFee();
 		
         ui->label_CurrentBlock_value->setText(QString::number(CurrentBlock));
 
         ui->label_Nethash->setText(tr("Difficulty:"));
         ui->label_Nethash_value->setText(QString::number(CurrentDiff,'f',4));
 
-        ui->label_CurrentBlockReward_value->setText(QString::number(BlockRewarducccoin, 'f', 1).append(" | ") + QString::number(BlockRewardFees).append("%"));
+        ui->label_CurrentBlockReward_value->setText(QString::number(BlockRewarducccoin, 'f', 1).append(" | ") + QString::number(DevFee).append("% | ") + QString::number(FundFee).append("%"));
 
         ui->label_Supply_value->setText(QString::number(chainActive.Tip()->nMoneySupply / COIN).append(" UCC"));
 
