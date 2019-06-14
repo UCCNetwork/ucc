@@ -60,7 +60,7 @@
     </qresource>
 
     <qresource prefix="/icons_dark">
-        <file alias="uccoin">res/dark/icons/uccoin.png</file>
+        <file alias="ucc">res/dark/icons/ucc.png</file>
         <file alias="address-book">res/dark/icons/address-book.png</file>
         <file alias="quit">res/dark/icons/quit.png</file>
         <file alias="send">res/dark/icons/send.png</file>
@@ -85,7 +85,7 @@
         <file alias="editpaste">res/dark/icons/editpaste.png</file>
         <file alias="editcopy">res/dark/icons/editcopy.png</file>
         <file alias="add">res/dark/icons/add.png</file>
-        <file alias="uccoin_testnet">res/dark/icons/uccoin.png</file>
+        <file alias="ucc_testnet">res/dark/icons/ucc.png</file>
         <file alias="edit">res/dark/icons/edit.png</file>
         <file alias="history">res/dark/icons/history.png</file>
         <file alias="overview">res/dark/icons/overview.png</file>
@@ -120,7 +120,7 @@
     </qresource>
 
     <qresource prefix="/icons_dblue">
-        <file alias="uccoin">res/dblue/icons/uccoin.png</file>
+        <file alias="ucc">res/dblue/icons/ucc.png</file>
         <file alias="address-book">res/dblue/icons/address-book.png</file>
         <file alias="quit">res/dblue/icons/quit.png</file>
         <file alias="send">res/dblue/icons/send.png</file>
@@ -145,7 +145,7 @@
         <file alias="editpaste">res/dblue/icons/editpaste.png</file>
         <file alias="editcopy">res/dblue/icons/editcopy.png</file>
         <file alias="add">res/dblue/icons/add.png</file>
-        <file alias="uccoin_testnet">res/dblue/icons/uccoin.png</file>
+        <file alias="ucc_testnet">res/dblue/icons/ucc.png</file>
         <file alias="edit">res/dblue/icons/edit.png</file>
         <file alias="history">res/dblue/icons/history.png</file>
         <file alias="overview">res/dblue/icons/overview.png</file>
@@ -201,7 +201,7 @@
 
     <qresource prefix="/images_dark">
         <file alias="about">res/dark/images/about.png</file>
-        <file alias="uccoin_logo_horizontal">res/dark/images/uccoin_logo_horizontal.png</file>
+        <file alias="ucc_logo_horizontal">res/dark/images/ucc_logo_horizontal.png</file>
         <file alias="frame_blue">res/dark/images/frame_blue.png</file>
         <file alias="downArrow">res/dark/images/downArrow.png</file>
         <file alias="downArrow_small">res/dark/images/downArrow_small.png</file>
@@ -212,12 +212,12 @@
         <file alias="branch-closed">res/dark/images/branch-closed.png</file>
         <file alias="branch-open">res/dark/images/branch-open.png</file>
         <file alias="splash">res/dark/images/splash.png</file>
-        <file alias="splash_testnet">res/dark/images/splash.png</file>
+        <file alias="splash_testnet">res/dark/images/splash_testnet.png</file>
     </qresource>
 
     <qresource prefix="/images_dblue">
         <file alias="about">res/dblue/images/about.png</file>
-        <file alias="uccoin_logo_horizontal">res/dblue/icons/ucc.png</file>
+        <file alias="ucc_logo_horizontal">res/dblue/icons/ucc_logo_horizontal.png</file>
         <file alias="frame_blue">res/dblue/images/frame_blue.png</file>
         <file alias="downArrow">res/dblue/images/downArrow.png</file>
         <file alias="downArrow_small">res/dblue/images/downArrow_small.png</file>
@@ -228,7 +228,7 @@
         <file alias="branch-closed">res/dblue/images/branch-closed.png</file>
         <file alias="branch-open">res/dblue/images/branch-open.png</file>
         <file alias="splash">res/dblue/images/splash.png</file>
-        <file alias="splash_testnet">res/dblue/images/splash.png</file>
+        <file alias="splash_testnet">res/dblue/images/splash_testnet.png</file>
     </qresource>
 
     <qresource prefix="/movies">
