@@ -223,7 +223,7 @@ void OptionsDialog::setMapper()
     mapper->addMapping(ui->stakeThresholdEdit, OptionsModel::StakeSplitThreshold);
     mapper->addMapping(ui->autoCombineEdit, OptionsModel::AutoCombineRewards);
     mapper->addMapping(ui->autoCombineCheckBox, OptionsModel::AutoCombine);
-    mapper->addMapping(ui->autoCombineLimitEdit, OptionsModel::AutoCombineLimit);
+    mapper->addMapping(ui->autoCombineBlockFrequencyEdit, OptionsModel::AutoCombineBlockFrequency);
 
     /* Network */
     mapper->addMapping(ui->mapPortUpnp, OptionsModel::MapPortUPnP);
@@ -377,14 +377,14 @@ void OptionsDialog::on_autoCombineSlider_valueChanged(int value)
     ui->autoCombineEdit->setValue(value);
 }
 
-void OptionsDialog::on_autoCombineLimitEdit_valueChanged(int i)
+void OptionsDialog::on_autoCombineBlockFrequencyEdit_valueChanged(int i)
 {
-    ui->autoCombineLimitSlider->setValue(i);
+    ui->autoCombineBlockFrequencySlider->setValue(i);
 }
 
-void OptionsDialog::on_autoCombineLimitSlider_valueChanged(int value)
+void OptionsDialog::on_autoCombineBlockFrequencySlider_valueChanged(int value)
 {
-    ui->autoCombineLimitEdit->setValue(value);
+    ui->autoCombineBlockFrequencyEdit->setValue(value);
 }
 
 void OptionsDialog::on_autoCombineCheckBox_stateChanged(int state)
@@ -404,7 +404,7 @@ void OptionsDialog::setWalletOptions()
 
     bool AutoCombine = settings.value("bAutoCombine").toBool();
     int AutoCombineRewards = settings.value("nAutoCombineRewards").toInt();
-    int AutoCombineLimit = settings.value("nAutoCombineLimit").toInt();
+    int AutoCombineBlockFrequency = settings.value("nAutoCombineBlockFrequency").toInt();
 
     if (pwalletMain) {
         CWalletDB walletdb(pwalletMain->strWalletFile);
@@ -415,11 +415,11 @@ void OptionsDialog::setWalletOptions()
             /* Update AutoCombineRewards value in wallet */
             pwalletMain->fCombineDust = AutoCombine;
             pwalletMain->nAutoCombineThreshold = AutoCombineRewards;
-            pwalletMain->nAutoCombineLimit = AutoCombineLimit;
+            pwalletMain->nAutoCombineBlockFrequency = AutoCombineBlockFrequency;
             /* Write settings to wallet */
             if (pwalletMain->fFileBacked) {
                 walletdb.WriteStakeSplitThreshold(nStakeSplitThreshold);
-                walletdb.WriteAutoCombineSettings(AutoCombine, AutoCombineRewards, AutoCombineLimit);
+                walletdb.WriteAutoCombineSettings(AutoCombine, AutoCombineRewards, AutoCombineBlockFrequency);
             }
         }
     }

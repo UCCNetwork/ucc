@@ -54,7 +54,7 @@ public:
         StakeSplitThreshold, // int
         AutoCombineRewards,  // int
         AutoCombine,         // bool
-        AutoCombineLimit,    // int
+        AutoCombineBlockFrequency,    // int
         OptionIDRowCount,
     };
 

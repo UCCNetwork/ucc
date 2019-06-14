@@ -58,10 +58,10 @@ private slots:
 
     void on_stakeThresholdEdit_valueChanged(int i);
     void on_autoCombineEdit_valueChanged(int i);
-    void on_autoCombineLimitEdit_valueChanged(int i);
+    void on_AutoCombineBlockFrequencyEdit_valueChanged(int i);
     void on_stakeThresholdSlider_valueChanged(int value);
     void on_autoCombineSlider_valueChanged(int value);
-    void on_autoCombineLimitSlider_valueChanged(int value);
+    void on_autoCombineBlockFrequencySlider_valueChanged(int value);
     void on_autoCombineCheckBox_stateChanged(int state);
 
 signals:

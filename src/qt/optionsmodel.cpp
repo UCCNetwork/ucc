@@ -119,8 +119,8 @@ void OptionsModel::Init()
         settings.setValue("nAutoCombineRewards", 500);
     if (!settings.contains("bAutoCombine"))
         settings.setValue("bAutoCombine", false);
-    if (!settings.contains("nAutoCombineLimit"))
-        settings.setValue("nAutoCombineLimit", 0);
+    if (!settings.contains("nAutoCombineBlockFrequency"))
+        settings.setValue("nAutoCombineBlockFrequency", 0);
 
     // Network
     if (!settings.contains("fUseUPnP"))
@@ -234,10 +234,10 @@ QVariant OptionsModel::data(const QModelIndex& index, int role) const
             if (pwalletMain)
                 return QVariant((bool)pwalletMain->fCombineDust);
             return settings.value("bAutoCombine");
-        case AutoCombineLimit:
+        case AutoCombineBlockFrequency:
             if (pwalletMain)
-                return QVariant((int)pwalletMain->nAutoCombineLimit);
-            return settings.value("nAutoCombineLimit");
+                return QVariant((int)pwalletMain->nAutoCombineBlockFrequency);
+            return settings.value("nAutoCombineBlockFrequency");
 #endif
 
         case DisplayUnit:
@@ -349,8 +349,8 @@ bool OptionsModel::setData(const QModelIndex& index, const QVariant& value, int 
                 settings.setValue("bAutoCombine", value);
             }
             break;
-        case AutoCombineLimit:
-            settings.setValue("nAutoCombineLimit", value.toInt());
+        case AutoCombineBlockFrequency:
+            settings.setValue("nAutoCombineBlockFrequency", value.toInt());
             break;
 
         case DisplayUnit:

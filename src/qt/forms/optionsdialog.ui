@@ -372,12 +372,12 @@
                 </widget>
                </item>
                <item row="1" column="0">
-                <widget class="QLabel" name="autoCombineLimitLabel">
+                <widget class="QLabel" name="autoCombineBlockFrequencyLabel">
                  <property name="toolTip">
                   <string>Do not affect the inputs with the number of confirmations over the limit ( 0 = disabled, confirmations are not checked )</string>
                  </property>
                  <property name="text">
-                  <string>Confirmations limit:</string>
+                  <string>AutoCombine Block-Frequency:</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -385,12 +385,12 @@
                 </widget>
                </item>
                <item row="1" column="1">
-                <widget class="QSlider" name="autoCombineLimitSlider">
+                <widget class="QSlider" name="autoCombineBlockFrequencySlider">
                   <property name="minimum">
                    <number>0</number>
                   </property>
                   <property name="maximum">
-                   <number>5000</number>
+                   <number>500</number>
                   </property>
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
@@ -398,12 +398,12 @@
                 </widget>
                </item>
                <item row="1" column="2">
-                <widget class="QSpinBox" name="autoCombineLimitEdit">
+                <widget class="QSpinBox" name="autoCombineBlockFrequencyEdit">
                   <property name="minimum">
                    <number>0</number>
                   </property>
                   <property name="maximum">
-                   <number>5000</number>
+                   <number>500</number>
                   </property>
                 </widget>
                </item>
