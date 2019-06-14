@@ -5,6 +5,7 @@
 #include "networkstyle.h"
 
 #include "guiconstants.h"
+#include "guiutil.h"
 
 #include <QApplication>
 
