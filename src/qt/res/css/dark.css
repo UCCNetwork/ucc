@@ -735,7 +735,7 @@
             font-size:55px;
          }
 
-    QWidget .QPushButton#blabel_esbcoin {
+    QWidget .QPushButton#blabel_uccoin {
             background-color: transparent;
             border:0;
             border-radius:0px;
@@ -769,7 +769,7 @@
      }
 
 
-     QWidget .QFrame#frame_blue .QLabel#label_esbcoin2 { /*esbcoin */
+     QWidget .QFrame#frame_blue .QLabel#label_uccoin2 { /*uccoin */
         background-color:transparent;
         color:#EBAB7B;
         font-size:15px;
@@ -787,7 +787,7 @@
         font-size:30px;
      }
 
-     QWidget .QFrame#frame_blue .QLabel#label_esbcoin3 { /*esbcoin */
+     QWidget .QFrame#frame_blue .QLabel#label_uccoin3 { /*uccoin */
         background-color:transparent;
         color:#EBAB7B;
         font-size:15px;
@@ -807,7 +807,7 @@
      }
 
 
-     QWidget .QFrame#frame_blue .QLabel#label_esbcoin4 { /*esbcoin */
+     QWidget .QFrame#frame_blue .QLabel#label_uccoin4 { /*uccoin */
         background-color:transparent;
         color:#EBAB7B;
         font-size:15px;
@@ -818,7 +818,7 @@
 
     QWidget .QFrame#frame_blue_3 { /* logo */
 
-        background-image: url(':/images_dark/esbcoin_logo_horizontal');
+        background-image: url(':/images_dark/uccoin_logo_horizontal');
         background-repeat:none;
         background-position: top-right;
         border-style: none;
@@ -2252,7 +2252,7 @@
     border:0;
     }
 
-    /* About esbcoin Dialog */
+    /* About uccoin Dialog */
     QDialog#AboutDialog QLabel#label, QDialog#AboutDialog QLabel#copyrightLabel, QDialog#AboutDialog QLabel#label_2 { /* About Bulwark Contents */
     margin-left:10px;
     }

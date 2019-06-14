@@ -2278,9 +2278,17 @@ MultiSend wird nicht aktiviert bis Sie auf Aktivieren geklickt haben.</translati
         <source>The Dash Core developers</source>
         <translation>Die Dash Core Entwickler</translation>
     </message>
+	<message>
+        <source>The PIVX Core developers</source>
+        <translation>Die PIVX Core Entwickler</translation>
+    </message>
+	<message>
+        <source>The XDNA Core developers</source>
+        <translation>Die XDNA Core Entwickler</translation>
+    </message>
     <message>
-        <source>The UCC Core developers</source>
-        <translation>Die UCC Core Entwickler</translation>
+        <source>The UCC developers</source>
+        <translation>Die UCC Entwickler</translation>
     </message>
     <message>
         <source>[testnet]</source>
