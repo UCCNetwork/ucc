@@ -217,3 +217,35 @@ Hardening enables the following features:
 	RW- R-- RW-
 
     The STK RW- means that the stack is readable and writeable but not executable.
+
+
+		On Ubuntu 18.04:
+		```
+		sudo apt-get install build-essential libboost-all-dev automake libtool autoconf
+sudo apt-get install build-essential libtool autotools-dev autoconf pkg-config libssl-dev
+sudo apt-get install libqrencode-dev autoconf openssl libssl-dev libevent-dev
+sudo add-apt-repository ppa:bitcoin/bitcoin
+sudo apt-get update
+sudo apt-get install libdb4.8-dev libdb4.8++-dev
+
+sudo apt-get install libzmq3-dev
+sudo apt-get install libboost-all-dev
+sudo apt-get install openssl1.0-dev
+
+Compile on Ubuntu for Ubuntu:
+./autogen.sh
+./configure
+make
+the UCC builds will be in the src and src/qt folders.
+
+
+Do a  make clean before building a Windows wallet/daemon !
+
+Compile for Windwows on Ubuntu:
+sudo apt install g++-mingw-w64-i686 mingw-w64-i686-dev
+cd depends
+make HOST=i686-w64-mingw32
+cd ..
+CONFIG_SITE=$PWD/depends/i686-w64-mingw32/share/config.site ./configure --prefix=/
+make
+```
