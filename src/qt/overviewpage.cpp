@@ -376,7 +376,7 @@ void OverviewPage::updateMasternodeInfo()
     // update ROI
     double BlockReward = GetBlockValue(CurrentBlock);
     BlockReward -= BlockReward * Params().GetDevFee() / 100;
-	BlockReward -= BlockReward * Params().GetFundFee() / 100;
+	  BlockReward -= BlockReward * Params().GetFundFee() / 100;
     (mn1==0) ? roi1 = 0 : roi1 = (GetMasternodePayment(CurrentBlock, 1, BlockReward)*BlockCount24h)/mn1/COIN;
     (mn2==0) ? roi2 = 0 : roi2 = (GetMasternodePayment(CurrentBlock, 2, BlockReward)*BlockCount24h)/mn2/COIN;
     (mn3==0) ? roi3 = 0 : roi3 = (GetMasternodePayment(CurrentBlock, 3, BlockReward)*BlockCount24h)/mn3/COIN;
