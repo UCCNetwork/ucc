@@ -2,13 +2,18 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
 // Copyright (c) 2017-2018 The XDNA Core developers
+// Copyright (c) 2018-2019 The ESBC Core developers
+// Copyright (c) 2018-2019 The UCC Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #ifndef BITCOIN_QT_CLIENTMODEL_H
 #define BITCOIN_QT_CLIENTMODEL_H
 
+#include "amount.h"
+#include "sync.h"
 #include <QObject>
+#include <map>
 
 class AddressTableModel;
 class OptionsModel;
@@ -35,6 +40,13 @@ enum NumConnections {
     CONNECTIONS_OUT = (1U << 1),
     CONNECTIONS_ALL = (CONNECTIONS_IN | CONNECTIONS_OUT),
 };
+
+extern CCriticalSection cs_stat;
+extern std::map<std::string, CAmount> masternodeRewards;
+extern CAmount posMin, posMax, posMedian;
+extern int block24hCount;
+extern CAmount lockedCoin;
+extern double roi1, roi2, roi3;
 
 /** Model for UCC network client. */
 class ClientModel : public QObject
@@ -86,6 +98,7 @@ private:
 
     QTimer* pollTimer;
     QTimer* pollMnTimer;
+    QTimer* poll24hStatsTimer;
 
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
@@ -96,6 +109,7 @@ signals:
     void strMasternodesChanged(const QString& strMasternodes);
     void alertsChanged(const QString& warnings);
     void bytesChanged(quint64 totalBytesIn, quint64 totalBytesOut);
+    void stats24hUpdated();
 
     //! Fired when a message should be reported to the user
     void message(const QString& title, const QString& message, unsigned int style);
@@ -108,6 +122,7 @@ public slots:
     void updateMnTimer();
     void updateNumConnections(int numConnections);
     void updateAlert(const QString& hash, int status);
+    void update24hStatsTimer();
 };
 
 #endif // BITCOIN_QT_CLIENTMODEL_H

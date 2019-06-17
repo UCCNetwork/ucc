@@ -2,6 +2,8 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2017 The PIVX developers
 // Copyright (c) 2017-2018 The XDNA Core developers
+// Copyright (c) 2018-2019 The ESBC Core developers
+// Copyright (c) 2018-2019 The UCC Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -19,6 +21,7 @@
 #include <vector>
 
 #include <QObject>
+#include <QThread>
 
 class AddressTableModel;
 class OptionsModel;
@@ -98,11 +101,25 @@ public:
     }
 };
 
+class BalanceWorker : public QObject
+{
+    Q_OBJECT
+
+private:
+    std::map<QString, CAmount> mapAddressBalances;
+
+public slots:
+    void makeBalance(const bool& watchOnly = false);
+
+signals:
+    void balanceReady(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& anonymizedBalance, const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance);
+};
+
 /** Interface to Bitcoin wallet from Qt view code. */
 class WalletModel : public QObject
 {
     Q_OBJECT
-
+    QThread workerThread;
 public:
     explicit WalletModel(CWallet* wallet, OptionsModel* optionsModel, QObject* parent = 0);
     ~WalletModel();
@@ -133,7 +150,8 @@ public:
     TransactionTableModel* getTransactionTableModel();
     RecentRequestsTableModel* getRecentRequestsTableModel();
 
-    CAmount getBalance(const CCoinControl* coinControl = NULL) const;
+    CAmount getAddressBalance(const QString address);
+    CAmount getBalance(const CCoinControl* coinControl = NULL);
     CAmount getUnconfirmedBalance() const;
     CAmount getImmatureBalance() const;
     CAmount getAnonymizedBalance() const;
@@ -213,6 +231,9 @@ public:
     void loadReceiveRequests(std::vector<std::string>& vReceiveRequests);
     bool saveReceiveRequest(const std::string& sAddress, const int64_t nId, const std::string& sRequest);
 
+    /* Refresh transaction list */
+    void refreshClicked();
+
 private:
     CWallet* wallet;
     bool fHaveWatchOnly;
@@ -226,6 +247,9 @@ private:
     AddressTableModel* addressTableModel;
     TransactionTableModel* transactionTableModel;
     RecentRequestsTableModel* recentRequestsTableModel;
+
+    std::map<QString, CAmount> mapAddressBalances;
+    bool cachedAddressBalances;
 
     // Cache some values to be able to detect changes
     CAmount cachedBalance;
@@ -244,11 +268,13 @@ private:
 
     void subscribeToCoreSignals();
     void unsubscribeFromCoreSignals();
-    void checkBalanceChanged();
+//    void checkBalanceChanged();
 
 signals:
     // Signal that balance in wallet changed
     void balanceChanged(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& anonymizedBalance, const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance);
+
+    void makeBalance(const bool& watchOnly = false);
 
     // Encryption status of wallet changed
     void encryptionStatusChanged(int status);
@@ -273,6 +299,7 @@ signals:
     // MultiSig address added
     void notifyMultiSigChanged(bool fHaveMultiSig);
 public slots:
+    void checkBalanceChanged(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& anonymizedBalance, const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance);
     /* Wallet status might have changed */
     void updateStatus();
     /* New transaction, or transaction changed status */

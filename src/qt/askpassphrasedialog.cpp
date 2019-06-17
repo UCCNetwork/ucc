@@ -118,7 +118,7 @@ void AskPassphraseDialog::accept()
                 if (model->setWalletEncrypted(true, newpass1)) {
                     QMessageBox::warning(this, tr("Wallet encrypted"),
                         "<qt>" +
-                            tr("UCC will close now to finish the encryption process. "
+                            tr("UCC Wallet will close now to finish the encryption process. "
                                "Remember that encrypting your wallet cannot fully protect "
                                "your UCCs from being stolen by malware infecting your computer.") +
                             "<br><br><b>" +
