@@ -181,7 +181,10 @@
 
     <qresource prefix="/css">
         <file alias="default">res/css/default.css</file>
+        <file alias="dark">res/css/dark.css</file>
+        <file alias="dblue">res/css/dblue.css</file>
     </qresource>
+
     <qresource prefix="/images">
         <file alias="about">res/images/about.png</file>
         <file alias="ucc_logo_horizontal">res/images/ucc_logo_horizontal.png</file>
