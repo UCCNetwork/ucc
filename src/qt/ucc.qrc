@@ -85,7 +85,7 @@
         <file alias="editpaste">res/dark/icons/editpaste.png</file>
         <file alias="editcopy">res/dark/icons/editcopy.png</file>
         <file alias="add">res/dark/icons/add.png</file>
-        <file alias="ucc_testnet">res/dark/icons/ucc.png</file>
+        <file alias="ucc_testnet">res/dark/icons/ucc_testnet.png</file>
         <file alias="edit">res/dark/icons/edit.png</file>
         <file alias="history">res/dark/icons/history.png</file>
         <file alias="overview">res/dark/icons/overview.png</file>
@@ -145,7 +145,7 @@
         <file alias="editpaste">res/dblue/icons/editpaste.png</file>
         <file alias="editcopy">res/dblue/icons/editcopy.png</file>
         <file alias="add">res/dblue/icons/add.png</file>
-        <file alias="ucc_testnet">res/dblue/icons/ucc.png</file>
+        <file alias="ucc_testnet">res/dblue/icons/ucc_testnet.png</file>
         <file alias="edit">res/dblue/icons/edit.png</file>
         <file alias="history">res/dblue/icons/history.png</file>
         <file alias="overview">res/dblue/icons/overview.png</file>
@@ -157,7 +157,7 @@
         <file alias="tx_input">res/dblue/icons/tx_input.png</file>
         <file alias="tx_output">res/dblue/icons/tx_output.png</file>
         <file alias="tx_inout">res/dblue/icons/tx_inout.png</file>
-        <file alias="tx_orphan">res/dblue/icons/tx_orphan.png</file>
+        <file alias="tx_orphan">res/dblue/icons/tx_mined.png</file>
         <file alias="lock_closed">res/dblue/icons/lock_closed.png</file>
         <file alias="lock_open">res/dblue/icons/lock_open.png</file>
         <file alias="key">res/dblue/icons/key.png</file>
@@ -195,6 +195,8 @@
         <file alias="leftArrow_small">res/images/leftArrow_small.png</file>
         <file alias="rightArrow_small">res/images/rightArrow_small.png</file>
         <file alias="qtreeview_selected">res/images/qtreeview_selected.png</file>
+        <file alias="branch-closed">res/images/branch-closed.png</file>
+        <file alias="branch-open">res/images/branch-open.png</file>
         <file alias="splash">res/images/splash.png</file>
         <file alias="splash_testnet">res/images/splash_testnet.png</file>
     </qresource>

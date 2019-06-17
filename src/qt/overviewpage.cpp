@@ -416,7 +416,7 @@ void OverviewPage::updateBlockChainInfo()
         int CurrentBlock = clientModel->getNumBlocks();
         int64_t netHashRate = chainActive.GetNetworkHashPS(24, CurrentBlock);
         double BlockReward = GetBlockValue(CurrentBlock);
-        double BlockRewarducccoin =  static_cast<double>(BlockReward/COIN);
+        double BlockRewarducc =  static_cast<double>(BlockReward/COIN);
 		double CurrentDiff = GetDifficulty();
 		double DevFee = Params().GetDevFee();
         double FundFee = Params().GetFundFee();
@@ -426,7 +426,7 @@ void OverviewPage::updateBlockChainInfo()
         ui->label_Nethash->setText(tr("Difficulty:"));
         ui->label_Nethash_value->setText(QString::number(CurrentDiff,'f',4));
 
-        ui->label_CurrentBlockReward_value->setText(QString::number(BlockRewarducccoin, 'f', 1).append(" | ") + QString::number(DevFee).append("% | ") + QString::number(FundFee).append("%"));
+        ui->label_CurrentBlockReward_value->setText(QString::number(BlockRewarducc, 'f', 1).append(" | ") + QString::number(DevFee).append("% | ") + QString::number(FundFee).append("%"));
 
         ui->label_Supply_value->setText(QString::number(chainActive.Tip()->nMoneySupply / COIN).append(" UCC"));
 
