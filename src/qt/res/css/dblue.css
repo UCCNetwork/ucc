@@ -689,14 +689,9 @@
      /*************** ########Frame_blue section########*****************/
 
      QWidget .QFrame#frame_blue { /*blue frame */
-/*
+
         border-image: url(':/images_dblue/frame_blue') 0 0 0 0 stretch stretch;
         background-repeat:none;
-*/
-        background-image: url(':/images_dblue/frame_blue');
-        background-repeat: repeat-xy;
-        background-position: left center;
-
         border-style: none;
      }
 
