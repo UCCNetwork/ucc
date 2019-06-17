@@ -198,6 +198,39 @@
         <file alias="splash">res/images/splash.png</file>
         <file alias="splash_testnet">res/images/splash_testnet.png</file>
     </qresource>
+
+    <qresource prefix="/images_dark">
+        <file alias="about">res/dark/images/about.png</file>
+        <file alias="ucc_logo_horizontal">res/images/ucc_logo_horizontal.png</file>
+        <file alias="frame_blue">res/dark/images/frame_blue.png</file>
+        <file alias="downArrow">res/dark/images/downArrow.png</file>
+        <file alias="downArrow_small">res/dark/images/downArrow_small.png</file>
+        <file alias="upArrow_small">res/dark/images/upArrow_small.png</file>
+        <file alias="leftArrow_small">res/dark/images/leftArrow_small.png</file>
+        <file alias="rightArrow_small">res/dark/images/rightArrow_small.png</file>
+        <file alias="qtreeview_selected">res/dark/images/qtreeview_selected.png</file>
+        <file alias="branch-closed">res/dark/images/branch-closed.png</file>
+        <file alias="branch-open">res/dark/images/branch-open.png</file>
+        <file alias="splash">res/dark/images/splash.png</file>
+        <file alias="splash_testnet">res/dark/images/splash_testnet.png</file>
+    </qresource>
+
+    <qresource prefix="/images_dblue">
+        <file alias="about">res/dblue/images/about.png</file>
+        <file alias="ucc_logo_horizontal">res/images/ucc_logo_horizontal.png</file>
+        <file alias="frame_blue">res/dblue/images/frame_blue.png</file>
+        <file alias="downArrow">res/dblue/images/downArrow.png</file>
+        <file alias="downArrow_small">res/dblue/images/downArrow_small.png</file>
+        <file alias="upArrow_small">res/dblue/images/upArrow_small.png</file>
+        <file alias="leftArrow_small">res/dblue/images/leftArrow_small.png</file>
+        <file alias="rightArrow_small">res/dblue/images/rightArrow_small.png</file>
+        <file alias="qtreeview_selected">res/dblue/images/qtreeview_selected.png</file>
+        <file alias="branch-closed">res/dblue/images/branch-closed.png</file>
+        <file alias="branch-open">res/dblue/images/branch-open.png</file>
+        <file alias="splash">res/dblue/images/splash.png</file>
+        <file alias="splash_testnet">res/dblue/images/splash_testnet.png</file>
+    </qresource>
+
     <qresource prefix="/movies">
         <file alias="spinner-000">res/movies/spinner-000.png</file>
         <file alias="spinner-001">res/movies/spinner-001.png</file>
