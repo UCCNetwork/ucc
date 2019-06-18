@@ -261,7 +261,6 @@ crypto_libbitcoin_crypto_a_SOURCES = \
   crypto/groestl.c \
   crypto/hamsi_helper.c \
   crypto/hamsi.c \
-  crypto/haval_helper.c \
   crypto/haval.c \
   crypto/hmac_sha256.cpp \
   crypto/hmac_sha256.h \

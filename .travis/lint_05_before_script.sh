@@ -1,3 +1,4 @@
+    
 #!/usr/bin/env bash
 #
 # Copyright (c) 2018 The Bitcoin Core developers
@@ -6,6 +7,4 @@
 
 export LC_ALL=C
 
-pwd
 git fetch --unshallow
-ls -l

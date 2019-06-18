@@ -39,8 +39,6 @@
 #include <stddef.h>
 #include <string.h>
 
-#include "sph_haval.h"
-
 #ifdef __cplusplus
 extern "C"{
 #endif
