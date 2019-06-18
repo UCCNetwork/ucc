@@ -44,7 +44,7 @@ install:
 before_script:
   - set -o errexit; source .travis/test_05_before_script.sh
 script:
-  - if [ $SECONDS -gt 1200 ]; then export DEPENDS_TIMEOUT="true" && export BUILD_ONLY_DEPENDS="true"; false; fi
+  - if [ $SECONDS -gt 1200 ]; then export DEPENDS_TIMEOUT="true" && export BUILD_ONLY_DEPENDS="true"; true; fi
   - if [ "$DEPENDS_TIMEOUT" != "true" ]; then set -o errexit; source .travis/test_06_script.sh; fi
 after_script:
     - echo $TRAVIS_COMMIT_RANGE
