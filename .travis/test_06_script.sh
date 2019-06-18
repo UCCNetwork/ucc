@@ -30,17 +30,17 @@ BEGIN_FOLD configure
 DOCKER_EXEC ../configure --cache-file=config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG || ( cat config.log && false)
 END_FOLD
 
-BEGIN_FOLD distdir
-DOCKER_EXEC make distdir VERSION=$HOST
-END_FOLD
+#BEGIN_FOLD distdir
+#DOCKER_EXEC make distdir VERSION=$HOST
+#END_FOLD
 
-cd "ucc-$HOST" || (echo "could not enter distdir ucc-$HOST"; exit 1)
+#cd "ucc-$HOST" || (echo "could not enter distdir ucc-$HOST"; exit 1)
 
-if [ "$BUILD_ONLY_DEPENDS" = "false" ]; then
-BEGIN_FOLD configure
-DOCKER_EXEC ./configure --cache-file=../config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG || ( cat config.log && false)
-END_FOLD
-fi
+#if [ "$BUILD_ONLY_DEPENDS" = "false" ]; then
+#BEGIN_FOLD configure
+#DOCKER_EXEC ./configure --cache-file=../config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG || ( cat config.log && false)
+#END_FOLD
+#fi
 
 if [ "$BUILD_ONLY_DEPENDS" = "false" ]; then
 BEGIN_FOLD build
