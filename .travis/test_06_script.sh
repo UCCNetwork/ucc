@@ -30,17 +30,17 @@ BEGIN_FOLD configure
 DOCKER_EXEC ../configure --cache-file=config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG || ( cat config.log && false)
 END_FOLD
 
-BEGIN_FOLD distdir
-DOCKER_EXEC make distdir VERSION=$HOST
-END_FOLD
+#BEGIN_FOLD distdir
+#DOCKER_EXEC make distdir VERSION=$HOST
+#END_FOLD
 
-cd "ucc-$HOST" || (echo "could not enter distdir ucc-$HOST"; exit 1)
+#cd "ucc-$HOST" || (echo "could not enter distdir ucc-$HOST"; exit 1)
 
-if [ "$BUILD_ONLY_DEPENDS" = "false" ]; then
-BEGIN_FOLD configure
-DOCKER_EXEC ./configure --cache-file=../config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG || ( cat config.log && false)
-END_FOLD
-fi
+#if [ "$BUILD_ONLY_DEPENDS" = "false" ]; then
+#BEGIN_FOLD configure
+#DOCKER_EXEC ./configure --cache-file=../config.cache $BITCOIN_CONFIG_ALL $BITCOIN_CONFIG || ( cat config.log && false)
+#END_FOLD
+#fi
 
 if [ "$BUILD_ONLY_DEPENDS" = "false" ]; then
 BEGIN_FOLD build
@@ -75,7 +75,7 @@ if [ "$DEPLOY_TEST_BUILDS" = "true" ] && [ "$BUILD_ONLY_DEPENDS" = "false" ]; th
   BEGIN_FOLD deploytests
 #  DOCKER_EXEC export VERSION="$REASON-$TRAVIS_BRANCH"
   if [ "$REASON" = "MacOS" ]; then DOCKER_EXEC pwd && find . -name '*.dmg' && echo $OUTDIR && mkdir -p "$TRAVIS_BUILD_DIR/release" && cp *.dmg "$TRAVIS_BUILD_DIR/release/UCC-$REASON-$TRAVIS_BRANCH.dmg" && cd "$TRAVIS_BUILD_DIR/release" && ls; fi
-  if [ "$REASON" != "MacOS" ]; then DOCKER_EXEC pwd && mkdir -p "$TRAVIS_BUILD_DIR/release/UCC-$REASON-$TRAVIS_BRANCH" && find $OUTDIR && cd $OUTDIR && pwd && cp -a bin/* "$TRAVIS_BUILD_DIR/release/UCC-$REASON-$TRAVIS_BRANCH/" && cd "$TRAVIS_BUILD_DIR/release" && strip UCC-$REASON-$TRAVIS_BRANCH/* && ls UCC-$REASON-$TRAVIS_BRANCH/* && zip -r UCC-$REASON-$TRAVIS_BRANCH.zip * && ls; fi
+  if [ "$REASON" != "MacOS" ]; then DOCKER_EXEC pwd && mkdir -p "$TRAVIS_BUILD_DIR/release/UCC-$REASON-$TRAVIS_BRANCH" && find $OUTDIR && cd $OUTDIR && pwd && ls -R * && cp -a bin/* "$TRAVIS_BUILD_DIR/release/UCC-$REASON-$TRAVIS_BRANCH/" && cd "$TRAVIS_BUILD_DIR/release" && strip UCC-$REASON-$TRAVIS_BRANCH/* && ls UCC-$REASON-$TRAVIS_BRANCH/* && zip -r UCC-$REASON-$TRAVIS_BRANCH.zip * && ls; fi
   DOCKER_EXEC git init
   DOCKER_EXEC git config --global user.email "3713548+flyinghuman@users.noreply.github.com"
   DOCKER_EXEC git config --global user.name "Travis-User"
