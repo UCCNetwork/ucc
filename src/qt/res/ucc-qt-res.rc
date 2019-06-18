@@ -20,13 +20,13 @@ BEGIN
         BLOCK "040904E4" // U.S. English - multilingual (hex)
         BEGIN
             VALUE "CompanyName",        "UCC"
-            VALUE "FileDescription",    "UCC Core (OSS GUI client for UCC)"
+            VALUE "FileDescription",    "UCC Wallet"
             VALUE "FileVersion",        VER_FILEVERSION_STR
             VALUE "InternalName",       "ucc-qt"
             VALUE "LegalCopyright",     COPYRIGHT_STR
             VALUE "LegalTrademarks1",   "Distributed under the MIT/X11 software license, see the accompanying file COPYING or http://www.opensource.org/licenses/mit-license.php."
             VALUE "OriginalFilename",   "ucc-qt.exe"
-            VALUE "ProductName",        "UCC Core"
+            VALUE "ProductName",        "UCC Wallet"
             VALUE "ProductVersion",     VER_PRODUCTVERSION_STR
         END
     END
