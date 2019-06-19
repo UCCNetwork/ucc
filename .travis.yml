@@ -133,7 +133,7 @@ jobs:
         BITCOIN_CONFIG="--enable-reduce-exports --with-gui=qt5"
 
     - stage: test
-      name: 'Linux 32-bit [GOAL: install] [no gui]'
+      name: 'Linux 32-bit [GOAL: install]  [bionic]  [with GUI]'
       env: >-
         REASON=Linux-32bit
         HOST=i686-pc-linux-gnu
@@ -143,12 +143,12 @@ jobs:
         CONFIG_SHELL="/bin/dash"
 
     - stage: test
-      name: 'x86_64 Linux  [GOAL: install]  [bionic]  [uses qt5 dev package]'
+      name: 'Linux 64-bit [GOAL: install]  [bionic]  [with GUI]'
       env: >-
         REASON=Linux-64bit
         HOST=x86_64-unknown-linux-gnu
         PACKAGES="python3-zmq qtbase5-dev qttools5-dev-tools protobuf-compiler libdbus-1-dev libharfbuzz-dev libprotobuf-dev"
-        DEP_OPTS="NO_QT=1 NO_UPNP=1 DEBUG=1 ALLOW_HOST_PACKAGES=1"
+        DEP_OPTS="NO_UPNP=1 DEBUG=1 ALLOW_HOST_PACKAGES=1"
         RUN_FUNCTIONAL_TESTS=true
         GOAL="install"
         BITCOIN_CONFIG="--enable-zmq --with-gui=qt5 --enable-glibc-back-compat --enable-reduce-exports --disable-tests LDFLAGS='-static-libstdc++ -static-libgcc' CFLAGS=-fPIC"
