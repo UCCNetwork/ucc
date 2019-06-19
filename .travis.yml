@@ -147,8 +147,8 @@ jobs:
       env: >-
         REASON=Linux-64bit
         HOST=x86_64-unknown-linux-gnu
-        PACKAGES="python3-zmq qtbase5-dev qttools5-dev-tools protobuf-compiler libdbus-1-dev libharfbuzz-dev libprotobuf-dev"
-        DEP_OPTS="NO_UPNP=1 DEBUG=1 ALLOW_HOST_PACKAGES=1"
+        PACKAGES="python3-zmq libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler qtbase5-dev libdbus-1-dev libharfbuzz-dev"
+        DEP_OPTS="NO_QT=1 NO_UPNP=1 DEBUG=1 ALLOW_HOST_PACKAGES=1"
         RUN_FUNCTIONAL_TESTS=true
         GOAL="install"
         BITCOIN_CONFIG="--enable-zmq --with-gui=qt5 --enable-glibc-back-compat --enable-reduce-exports --disable-tests LDFLAGS='-static-libstdc++ -static-libgcc' CFLAGS=-fPIC"
@@ -159,7 +159,7 @@ jobs:
         REASON=Linux-64bit-Ubuntu1604
         HOST=x86_64-unknown-linux-gnu
         DOCKER_NAME_TAG=ubuntu:16.04
-        PACKAGES="python3-zmq qtbase5-dev qttools5-dev-tools libssl-dev libevent-dev bsdmainutils libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev libdb5.3++-dev libminiupnpc-dev libzmq3-dev libprotobuf-dev protobuf-compiler libqrencode-dev libgmp-dev"
+        PACKAGES="python3-zmq libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools qtbase5-dev libssl-dev libevent-dev bsdmainutils libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev libdb5.3++-dev libminiupnpc-dev libzmq3-dev libprotobuf-dev protobuf-compiler libqrencode-dev libgmp-dev"
         NO_DEPENDS=1
         GOAL="install"
         BITCOIN_CONFIG="--enable-zmq --with-incompatible-bdb --with-gui=qt5 --disable-hardening --disable-asm --enable-glibc-back-compat --enable-reduce-exports --disable-tests LDFLAGS='-static-libstdc++ -static-libgcc' CFLAGS=-fPIC"
@@ -169,7 +169,7 @@ jobs:
       env: >-
         REASON=Linux-64bit-nD
         HOST=x86_64-unknown-linux-gnu
-        PACKAGES="python3-zmq qtbase5-dev qttools5-dev-tools libssl1.0-dev libevent-dev bsdmainutils libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev libdb5.3++-dev libminiupnpc-dev libzmq3-dev libprotobuf-dev protobuf-compiler libqrencode-dev libgmp-dev"
+        PACKAGES="python3-zmq libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools qtbase5-dev libssl1.0-dev libevent-dev bsdmainutils libboost-system-dev libboost-filesystem-dev libboost-chrono-dev libboost-program-options-dev libboost-test-dev libboost-thread-dev libdb5.3++-dev libminiupnpc-dev libzmq3-dev libprotobuf-dev protobuf-compiler libqrencode-dev libgmp-dev"
         NO_DEPENDS=1
         GOAL="install"
         BITCOIN_CONFIG="--enable-zmq --with-incompatible-bdb --with-gui=qt5 --enable-glibc-back-compat --enable-reduce-exports --disable-tests LDFLAGS='-static-libstdc++ -static-libgcc' CFLAGS=-fPIC"
