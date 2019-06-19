@@ -74,8 +74,7 @@ Section -Main SEC0000
     SetOutPath $INSTDIR
     SetOverwrite on
     File @abs_top_srcdir@/release/@BITCOIN_GUI_NAME@@EXEEXT@
-    File /oname=COPYING.txt @abs_top_srcdir@/COPYING
-    File /oname=readme.txt @abs_top_srcdir@/doc/README_windows.txt
+    File /oname=COPYING.txt @abs_top_srcdir@/COPYING   
     SetOutPath $INSTDIR\daemon
     File @abs_top_srcdir@/release/@BITCOIN_DAEMON_NAME@@EXEEXT@
     File @abs_top_srcdir@/release/@BITCOIN_CLI_NAME@@EXEEXT@
@@ -126,7 +125,6 @@ done${UNSECTION_ID}:
 Section /o -un.Main UNSEC0000
     Delete /REBOOTOK $INSTDIR\@BITCOIN_GUI_NAME@@EXEEXT@
     Delete /REBOOTOK $INSTDIR\COPYING.txt
-    Delete /REBOOTOK $INSTDIR\readme.txt
     RMDir /r /REBOOTOK $INSTDIR\daemon
     RMDir /r /REBOOTOK $INSTDIR\doc
     DeleteRegValue HKCU "${REGKEY}\Components" Main
