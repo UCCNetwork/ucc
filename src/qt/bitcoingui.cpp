@@ -496,7 +496,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     openAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_FileIcon), tr("Open &URI..."), this);
     openAction->setStatusTip(tr("Open a UCC: URI or payment request"));
 
-    openBlockExplorerAction = new QAction(QIcon(GUIUtil::getThemeImage(":/icons/blockexplorer")), tr("Blockchain explorer"), this);
+    openBlockExplorerAction = new QAction(QIcon(GUIUtil::getThemeImage(":/icons/blockexplorer")), "", this);
     openBlockExplorerAction->setStatusTip(tr("Blockchain explorer"));
     openBlockExplorerAction->setToolTip(openBlockExplorerAction->statusTip());
     openBlockExplorerAction->setCheckable(true);
