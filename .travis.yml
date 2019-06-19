@@ -136,6 +136,7 @@ jobs:
       name: 'Win32 Setup  [GOAL: deploy] [no functional tests]'
       env: >-
         REASON=Win-32bit-Setup
+        ADDWINSETUP=true
         HOST=i686-w64-mingw32
         DPKG_ADD_ARCH="i386"
         PACKAGES="python3 nsis g++-mingw-w64-i686 wine-binfmt wine32"
@@ -147,6 +148,7 @@ jobs:
       name: 'Win64 Setup  [GOAL: deploy] [no functional tests]'
       env: >-
         REASON=Win-64bit-Setup
+        ADDWINSETUP=true
         HOST=x86_64-w64-mingw32
         PACKAGES="python3 nsis g++-mingw-w64-x86-64 wine-binfmt wine64"
         RUN_FUNCTIONAL_TESTS=false
