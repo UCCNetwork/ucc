@@ -464,9 +464,6 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     openRPCConsoleAction = new QAction(QIcon(GUIUtil::getThemeImage(":/icons/debugwindow")), tr("&Debug console"), this);
     openRPCConsoleAction->setStatusTip(tr("Open debugging console"));
 
-    openBlockExplorerAction = new QAction(QIcon(GUIUtil::getThemeImage(":/icons/blockexplorer")), tr("Blockchain explorer"), this);
-    openBlockExplorerAction->setStatusTip(tr("Open inWallet Blockchain explorer"));
-
     openInfoAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation), tr("&Information"), this);
     openInfoAction->setStatusTip(tr("Show diagnostic information"));
     openRPCConsoleAction = new QAction(QIcon(GUIUtil::getThemeImage(":/icons/debugwindow")), tr("&Debug console"), this);
@@ -499,7 +496,7 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     openAction = new QAction(QApplication::style()->standardIcon(QStyle::SP_FileIcon), tr("Open &URI..."), this);
     openAction->setStatusTip(tr("Open a UCC: URI or payment request"));
 
-    openBlockExplorerAction = new QAction(QIcon(":/icons/blockexplorer"), "", this);
+    openBlockExplorerAction = new QAction(QIcon(GUIUtil::getThemeImage(":/icons/blockexplorer")), tr("Blockchain explorer"), this);
     openBlockExplorerAction->setStatusTip(tr("Blockchain explorer"));
     openBlockExplorerAction->setToolTip(openBlockExplorerAction->statusTip());
     openBlockExplorerAction->setCheckable(true);
