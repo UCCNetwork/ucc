@@ -40,6 +40,9 @@ void BalanceWorker::makeBalance(const bool& watchOnly)
         TRY_LOCK(pwalletMain->cs_wallet, lockWallet);
         if (!lockWallet) return;
         qDebug() << __FUNCTION__ << ": TRY_LOCK(pwalletMain->cs_wallet, lockWallet)";
+        
+        TRY_LOCK(cs_main, lockMain);
+        if (!lockMain) return;
 
         CAmount balance = 0;
         CAmount unconfirmedBalance = 0;
@@ -228,6 +231,9 @@ void WalletModel::refreshClicked()
 //void WalletModel::checkBalanceChanged()
 void WalletModel::checkBalanceChanged(const CAmount& balance, const CAmount& unconfirmedBalance, const CAmount& immatureBalance, const CAmount& anonymizedBalance, const CAmount& watchOnlyBalance, const CAmount& watchUnconfBalance, const CAmount& watchImmatureBalance)
 {
+    TRY_LOCK(cs_main, lockMain);
+    if (!lockMain) return;
+
     if (cachedBalance != balance || cachedUnconfirmedBalance != unconfirmedBalance || cachedImmatureBalance != immatureBalance ||
         cachedAnonymizedBalance != anonymizedBalance ||
         cachedWatchOnlyBalance != watchOnlyBalance || cachedWatchUnconfBalance != watchUnconfBalance || cachedWatchImmatureBalance != watchImmatureBalance) {
