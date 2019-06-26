@@ -755,6 +755,11 @@ bool IsStandardTx(const CTransaction& tx, string& reason)
 
 bool IsFinalTx(const CTransaction& tx, int nBlockHeight, int64_t nBlockTime)
 {
+    TRY_LOCK(cs_main, lockMain);
+    if (!lockMain) {
+       return false;
+    }
+
     AssertLockHeld(cs_main);
     // Time based nLockTime implemented in 0.1.6
     if (tx.nLockTime == 0)
@@ -3706,6 +3711,11 @@ bool ProcessNewBlock(CValidationState& state, CNode* pfrom, CBlock* pblock, CDis
 
 bool TestBlockValidity(CValidationState& state, const CBlock& block, CBlockIndex* const pindexPrev, bool fCheckPOW, bool fCheckMerkleRoot)
 {
+    TRY_LOCK(cs_main, lockMain);
+    if (!lockMain) {
+       return false;
+    }
+
     AssertLockHeld(cs_main);
     if (pindexPrev != chainActive.Tip()) {
         LogPrintf("TestBlockValidity(): No longer working on chain tip\n"); return false;
