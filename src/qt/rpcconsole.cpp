@@ -57,12 +57,12 @@ const QString RESYNC("-resync");
 
 const struct {
     const char* url;
-    const QString& source;
+    const char* source;
 } ICON_MAPPING[] = {
-    {"cmd-request", GUIUtil::getThemeImage(":/icons/tx_input")},
-    {"cmd-reply", GUIUtil::getThemeImage(":/icons/tx_output")},
-    {"cmd-error", GUIUtil::getThemeImage(":/icons/tx_output")},
-    {"misc", GUIUtil::getThemeImage(":/icons/tx_inout")},
+    {"cmd-request", ":/icons/tx_input"},
+    {"cmd-reply", ":/icons/tx_output"},
+    {"cmd-error", ":/icons/tx_output"},
+    {"misc", ":/icons/tx_inout"},
     {NULL, NULL}};
 
 /* Object for executing console RPC commands in a separate thread.
@@ -226,13 +226,10 @@ RPCConsole::RPCConsole(QWidget* parent) : QDialog(parent),
                                           cachedNodeid(-1)
 {
     ui->setupUi(this);
-
-    ui->clearButton->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/remove")));
-
     GUIUtil::restoreWindowGeometry("nRPCConsoleWindow", this->size(), this);
 
 #ifndef Q_OS_MAC
-    ui->openDebugLogfileButton->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/export")));
+    ui->openDebugLogfileButton->setIcon(QIcon(":/icons/export"));
 #endif
 
     // Install event filter for up and down arrow

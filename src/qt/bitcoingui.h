@@ -137,7 +137,6 @@ private:
     QMenu* trayIconMenu;
     Notificator* notificator;
     RPCConsole* rpcConsole;
-    BlockExplorer* explorerWindow;
 
     /** Keep track of previous number of blocks, to detect progress */
     int prevBlocks;

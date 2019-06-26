@@ -38,10 +38,6 @@ SendCoinsDialog::SendCoinsDialog(QWidget* parent) : QDialog(parent),
 {
     ui->setupUi(this);
 
-    ui->sendButton->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/send")));
-    ui->clearButton->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/remove")));
-    ui->addButton->setIcon(QIcon(GUIUtil::getThemeImage(":/icons/add")));
-
 //tmp
 ui->checkUseObfuscation->setVisible(false);
 

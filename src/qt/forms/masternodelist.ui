@@ -139,16 +139,6 @@
                <string>Payee</string>
               </property>
              </column>
-             <column>
-              <property name="text">
-               <string>24h Coins</string>
-              </property>
-             </column>
-             <column>
-              <property name="text">
-               <string>Luck</string>
-              </property>
-             </column>
             </widget>
            </item>
            <item>
@@ -320,16 +310,6 @@
            <column>
             <property name="text">
              <string>Payee</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>24h Coins</string>
-            </property>
-           </column>
-           <column>
-            <property name="text">
-             <string>Luck</string>
             </property>
            </column>
           </widget>

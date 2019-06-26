@@ -45,10 +45,8 @@ HelpMessageDialog::HelpMessageDialog(QWidget* parent, bool about) : QDialog(pare
     version += " " + tr("(%1-bit)").arg(32);
 #endif
 
-    ui->graphic->setPixmap(QPixmap(GUIUtil::getThemeImage(":/images/about")));
-
     if (about) {
-        setWindowTitle(tr("About UCC Wallet"));
+        setWindowTitle(tr("About UCC Core"));
 
         /// HTML-format the license message from the core
         QString licenseInfo = QString::fromStdString(LicenseInfo());
@@ -157,7 +155,7 @@ ShutdownWindow::ShutdownWindow(QWidget* parent, Qt::WindowFlags f) : QWidget(par
 {
     QVBoxLayout* layout = new QVBoxLayout();
     layout->addWidget(new QLabel(
-        tr("UCC Wallet is shutting down...") + "<br /><br />" +
+        tr("UCC Core is shutting down...") + "<br /><br />" +
         tr("Do not shut down the computer until this window disappears.")));
     setLayout(layout);
 }
