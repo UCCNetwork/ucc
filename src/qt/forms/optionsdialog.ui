@@ -361,10 +361,10 @@
                <item row="0" column="0">
                 <widget class="QLabel" name="autoCombineLabel">
                  <property name="toolTip">
-                  <string>Combine outputs, within the same address, to the setting value. A standard transaction will be created, one combine operation on each chain block.</string>
+                  <string>Wallet will automatically monitor for UTXOs with values below the threshold amount, and combine them into transactions sized to the threshold amount, if they reside with the same UCC address.</string>
                  </property>
                  <property name="text">
-                  <string>Autocombine value:</string>
+                  <string>Autocombine threshold:</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -374,7 +374,7 @@
                <item row="1" column="0">
                 <widget class="QLabel" name="autoCombineBlockFrequencyLabel">
                  <property name="toolTip">
-                  <string>Do not affect the inputs with the number of confirmations over the limit ( 0 = disabled, confirmations are not checked )</string>
+                  <string>A frequency value of "0" will run the combine once, on the next available block, and once again on each wallet startup.</string>
                  </property>
                  <property name="text">
                   <string>AutoCombine Block-Frequency:</string>
