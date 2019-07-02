@@ -58,12 +58,13 @@ static Checkpoints::MapCheckpoints mapCheckpoints =
     boost::assign::map_list_of(0, uint256("0x000000c914b2c4a05d8e28f4ec8498b7f13798cd3513cf856c0da23690c00a89"))
                               (50, uint256("0x00000095487e7b6c6e10eca3d1c16f42af2b7daa85c6ebc3880647361aa22ba4"))
                               (60200, uint256("0x000000000b791c519d51f8547ccdb4ca6657e7ebc4bcd3a11a01ade338074066"))
-							  (91268, uint256("0x00000000288b93b6501a6b877a029064b58963d6d892f275f23e04a5945ff64a"));
+							  (91268, uint256("0x00000000288b93b6501a6b877a029064b58963d6d892f275f23e04a5945ff64a"))
+                              (403872, uint256("0000000068708e8055130118c63c8ab0234530f65c6626d807b5be0630fddab8"));
 
 static const Checkpoints::CCheckpointData data = {
     &mapCheckpoints,
-    1542267487, // * UNIX timestamp of last checkpoint block
-    93975,          // * total number of transactions between genesis and last checkpoint
+    1562008296, // * UNIX timestamp of last checkpoint block
+    429728,     // * total number of transactions between genesis and last checkpoint
                 //   (the tx=... number in the SetBestChain debug.log lines)
     2000        // * estimated number of transactions per day after checkpoint
 };
@@ -184,7 +185,7 @@ public:
         nStartMasternodePaymentsBlock = 7001;
 
         /** Height or Time Based Activations **/
-        nLastPOWBlock = 777000;
+        nLastPOWBlock = 462000;
         nModifierUpdateBlock = std::numeric_limits<decltype(nModifierUpdateBlock)>::max();
 
         const char* pszTimestamp = "One World United! 2018-09-09";
@@ -203,15 +204,14 @@ public:
         genesis.nNonce = 1226015;
 
         //MineGenesis(genesis);
-        //std::cout << genesis.ToString() << std::endl;
 
-	hashGenesisBlock = genesis.GetHash();
+	    hashGenesisBlock = genesis.GetHash();
 
         assert(hashGenesisBlock == uint256("000000c914b2c4a05d8e28f4ec8498b7f13798cd3513cf856c0da23690c00a89"));
         assert(genesis.hashMerkleRoot == uint256("08b1bee241c6a39de8adb7de82bedeaa139976613b67d98d12c25de5bf8681c4"));
 
         vSeeds.push_back(CDNSSeedData("uccnetwork.org", "seednode1.uccnetwork.org"));     // Primary DNS Seeder
-	vSeeds.push_back(CDNSSeedData("uccnetwork.org", "seednode2.uccnetwork.org"));
+	    vSeeds.push_back(CDNSSeedData("uccnetwork.org", "seednode2.uccnetwork.org"));
         vSeeds.push_back(CDNSSeedData("uccnetwork.org", "seednode3.uccnetwork.org"));
         vSeeds.push_back(CDNSSeedData("50.59.59.250", "50.59.59.250"));
         vSeeds.push_back(CDNSSeedData("108.61.148.90", "108.61.148.90"));
@@ -299,14 +299,14 @@ public:
         nModifierUpdateBlock = std::numeric_limits<decltype(nModifierUpdateBlock)>::max();
         nMaxMoneyOut = 1000000000 * COIN;
 
-	nStartMasternodePaymentsBlock = 300;
+	    nStartMasternodePaymentsBlock = 300;
 
 
         //! Modify the testnet genesis block so the timestamp is valid for a later start.
         genesis.nTime = 1561383715;
         genesis.nNonce = 4814113;
 
-	MineGenesis(genesis);
+	    //MineGenesis(genesis);
 
         hashGenesisBlock = genesis.GetHash();
 
@@ -315,7 +315,7 @@ public:
         vFixedSeeds.clear();
         vSeeds.clear();
         vSeeds.push_back(CDNSSeedData("uccnetwork.org", "seednode1.uccnetwork.org"));     // Primary DNS Seeder
-	vSeeds.push_back(CDNSSeedData("uccnetwork.org", "seednode2.uccnetwork.org"));
+	    vSeeds.push_back(CDNSSeedData("uccnetwork.org", "seednode2.uccnetwork.org"));
         vSeeds.push_back(CDNSSeedData("uccnetwork.org", "seednode3.uccnetwork.org"));
 
         base58Prefixes[PUBKEY_ADDRESS] = std::vector<unsigned char>(1, 128); // Testnet UCC addresses start with 't'
@@ -342,6 +342,7 @@ public:
         strObfuscationPoolDummyAddress = "tk7oN9aE8Foa8gqoJCYx4UcrWnEaFvr3Co";
         nStartMasternodePayments = 1558695858;
     }
+
     const Checkpoints::CCheckpointData& Checkpoints() const
     {
         return dataTestnet;
@@ -398,8 +399,7 @@ public:
         hashGenesisBlock = genesis.GetHash();
         nDefaultPort = 61112;
 
-	//MineGenesis(genesis);
-        //std::cout << genesis.ToString() << std::endl;
+	    //MineGenesis(genesis);
 
         assert(hashGenesisBlock == uint256("0000065c21928f425a473b9e61b4f25865077176507d5b80ed4260bb4f8b1a89"));
 

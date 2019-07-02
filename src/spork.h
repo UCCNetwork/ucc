@@ -43,7 +43,7 @@ using namespace boost;
 #define SPORK_4_MASTERNODE_PAYMENT_ENFORCEMENT_DEFAULT 4529244393 //OFF at start to prevent nodes autoban
 #define SPORK_5_RECONSIDER_BLOCKS_DEFAULT 0
 #define SPORK_6_MN_WINNER_MINIMUM_AGE_DEFAULT 8000               // Age in seconds. This should be > MASTERNODE_REMOVAL_SECONDS to avoid
-#define SPORK_7_NEW_PROTOCOL_ENFORCEMENT_DEFAULT 4529244393      //OFF at start to prevent nodes autoban
+#define SPORK_7_NEW_PROTOCOL_ENFORCEMENT_DEFAULT 1565031600      // 5th August 2019 9:00 pm
                                                                  // misconfigured new nodes in the list.
                                                                  // Set this to zero to emulate classic behaviour
 class CSporkMessage;

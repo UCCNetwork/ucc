@@ -1628,8 +1628,8 @@ CAmount GetBlockValue(int nHeight)
         return 5300000 * COIN;
     } else if (nHeight <= Params().ANTI_INSTAMINE_TIME()) {
         return 1 * COIN;
-        // POS Cutover phase
-    } else if (nHeight <= (Params().LAST_POW_BLOCK()+1000) && nHeight > Params().LAST_POW_BLOCK()) {
+        // POS Cutover phase / 1 day
+    } else if (nHeight <= (Params().LAST_POW_BLOCK()+1440) && nHeight > Params().LAST_POW_BLOCK()) {
         return 1 * COIN;
         // POS first Year
     } else if (nHeight <= 1302600 && nHeight > Params().LAST_POW_BLOCK()) {
