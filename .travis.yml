@@ -74,7 +74,6 @@ after_script:
     - echo $TRAVIS_COMMIT_RANGE
     - echo $TRAVIS_COMMIT_LOG
 after_success:
-    - find $OUTDIR
     - export VERSION=$REASON-$TRAVIS_BRANCH
     - if [ "$REASON" = "ARM" ]; then cd $OUTDIR && cp -a bin UCC-$VERSION && ls UCC-$VERSION/ && zip -r UCC-$VERSION.zip UCC-$VERSION && ls; fi
     - if [ "$REASON" = "Win" ]; then cd $OUTDIR && cp -a bin UCC-$VERSION && ls UCC-$VERSION/ && zip -r UCC-$VERSION.zip UCC-$VERSION && ls; fi
