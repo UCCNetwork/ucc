@@ -89,9 +89,18 @@ CAmount CChainParams::SubsidyValue(SubsidySwitchPoints::key_type level) const
 {
     const auto& points = subsidySwitchPoints;
 
-    SubsidySwitchPoints::const_iterator point = points.upper_bound(level);
+    auto decrease_interval = std::min(subsidyDecreaseCount_F2, (nHeight - subsidyScheduleStart_F2) / subsidyDecreaseInterval_F2);
 
-    if(point != subsidySwitchPoints.begin())
+    return subsidySwitchPointsSchedule_F2.find(decrease_interval)->second;
+}
+
+CAmount CChainParams::SubsidyValue(SubsidySwitchPoints::key_type level, uint32_t nTime, int nHeight) const
+{
+    const auto& switch_points = GetSubsidySwitchPoints(nTime, nHeight);
+
+    SubsidySwitchPoints::const_iterator point = switch_points.upper_bound(level);
+
+    if(point != switch_points.begin())
         point = std::prev(point);
 
     return point->second;
@@ -171,6 +180,32 @@ public:
         };
         assert(subsidySwitchPoints.size());
 
+        subsidySwitchPoints_F2_0 = {
+            {0         ,   38  * (COIN/10)},
+            {20   * 1e9,   47  * (COIN/10)},
+            {30   * 1e9,   66  * (COIN/10)},
+            {50   * 1e9,   94  * (COIN/10)},
+            {80   * 1e9,  131  * (COIN/10)},
+            {130  * 1e9,  177  * (COIN/10)},
+            {210  * 1e9,  233  * (COIN/10)},
+            {340  * 1e9,  298  * (COIN/10)},
+            {550  * 1e9,  373  * (COIN/10)},
+            {890  * 1e9,  456  * (COIN/10)},
+            {1440 * 1e9,  550  * (COIN/10)},
+            {2330 * 1e9,  652  * (COIN/10)},
+            {3770 * 1e9,  764  * (COIN/10)},
+            {6100 * 1e9,  885  * (COIN/10)},
+            {9870 * 1e9,  1015 * (COIN/10)},
+        };
+        assert(subsidySwitchPoints_F2_0.size());
+
+        subsidyScheduleStart_F2    = 177000; // block#XXXXXX ~= nF2Timestamp + 1 day
+        subsidyDecreaseInterval_F2 = 43200;  // 43200 bloks ~= 30 days
+        subsidyDecreaseCount_F2    = 23;     // 23
+        subsidyDecreaseValue_F2    = 694;    // 694 = 6,94% * 100
+
+        initSubsidySwitchPointsSchedule();
+
         nMaxReorganizationDepth = 100;
         nEnforceBlockUpgradeMajority = 750;
         nRejectBlockOutdatedMajority = 950;
@@ -187,6 +222,10 @@ public:
         /** Height or Time Based Activations **/
         nLastPOWBlock = 462000;
         nModifierUpdateBlock = std::numeric_limits<decltype(nModifierUpdateBlock)>::max();
+        nStartMasternodePayments = 1403728576; //Wed, 25 Jun 2014 20:36:16 GMT
+        nHEXHashTimestamp = 1533567600; // 6  August  2018, 15:00:00 GMT+00:00
+        nF2Timestamp      = 1540728000; // 28 October 2018, 12:00:00 GMT+00:00
+        nF3ActivationHeight = 682500;
 
         const char* pszTimestamp = "One World United! 2018-09-09";
         CMutableTransaction txNew;

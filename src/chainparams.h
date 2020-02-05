@@ -108,9 +108,10 @@ public:
 
     /** Height or Time Based Activations **/
     //todo: ModifierUpgradeBlock affect POS
-    int ModifierUpgradeBlock() const { return nModifierUpdateBlock; }
-    int LAST_POW_BLOCK() const { return nLastPOWBlock; }
-    int StartMNPaymentsBlock() const {return nStartMasternodePaymentsBlock; }
+    int ModifierUpgradeBlock()       const { return nModifierUpdateBlock; }
+    int LAST_POW_BLOCK()             const { return nLastPOWBlock; }
+    int StartMNPaymentsBlock()       const { return nStartMasternodePaymentsBlock; }
+    int F3Activation()               const { return nF3ActivationHeight; }
 
     const SubsidySwitchPoints& GetSubsidySwitchPoints(uint32_t nTime) const
     {
@@ -143,6 +144,7 @@ protected:
     int nMasternodePercentDrift;
     int nMaturity;
     int nModifierUpdateBlock;
+    int nF3ActivationHeight;
     CAmount nMaxMoneyOut;
     int nMinerThreads;
     std::vector<CDNSSeedData> vSeeds;

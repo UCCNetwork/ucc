@@ -1,6 +1,6 @@
 // Copyright (c) 2014-2016 The Dash developers
 // Copyright (c) 2016-2017 The PIVX developers
-// Copyright (c) 2017-2018 The XDNA Core developers
+// Copyright (c) 2017-2019 The XDNA Core developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,6 +11,7 @@
 #include "net.h"
 #include "protocol.h"
 #include "sync.h"
+#include "sporkdb.h"
 #include "util.h"
 #include <boost/lexical_cast.hpp>
 
@@ -25,6 +26,36 @@ CSporkManager sporkManager;
 std::map<uint256, CSporkMessage> mapSporks;
 std::map<int, CSporkMessage> mapSporksActive;
 
+// PIVX: on startup load spork values from previous session if they exist in the sporkDB
+void LoadSporksFromDB()
+{
+    for (int i = SPORK_START; i <= SPORK_END; ++i) {
+        // Since not all spork IDs are in use, we have to exclude undefined IDs
+        std::string strSpork = sporkManager.GetSporkNameByID(i);
+        if (strSpork == "Unknown") continue;
+
+        // attempt to read spork from sporkDB
+        CSporkMessage spork;
+        if (!pSporkDB->ReadSpork(i, spork)) {
+            LogPrintf("%s : no previous value for %s found in database\n", __func__, strSpork);
+            continue;
+        }
+
+        // add spork to memory
+        mapSporks[spork.GetHash()] = spork;
+        mapSporksActive[spork.nSporkID] = spork;
+        std::time_t result = spork.nValue;
+        // If SPORK Value is greater than 1,000,000 assume it's actually a Date and then convert to a more readable format
+        if (spork.nValue > 1000000) {
+            LogPrintf("%s : loaded spork %s with value %d : %s", __func__,
+                      sporkManager.GetSporkNameByID(spork.nSporkID), spork.nValue,
+                      std::ctime(&result));
+        } else {
+            LogPrintf("%s : loaded spork %s with value %d\n", __func__,
+                      sporkManager.GetSporkNameByID(spork.nSporkID), spork.nValue);
+        }
+    }
+}
 
 void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
@@ -37,6 +68,10 @@ void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
         vRecv >> spork;
 
         if (chainActive.Tip() == NULL) return;
+
+        // Ignore spork messages about unknown/deleted sporks
+        std::string strSpork = sporkManager.GetSporkNameByID(spork.nSporkID);
+        if (strSpork == "Unknown") return;
 
         uint256 hash = spork.GetHash();
         if (mapSporksActive.count(spork.nSporkID)) {
@@ -60,8 +95,8 @@ void ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
         mapSporksActive[spork.nSporkID] = spork;
         sporkManager.Relay(spork);
 
-        //does a task if needed
-        ExecuteSpork(spork.nSporkID, spork.nValue);
+        // PIVX: add to spork database.
+        pSporkDB->WriteSpork(spork.nSporkID, spork);
     }
     if (strCommand == "getsporks") {
         std::map<int, CSporkMessage>::iterator it = mapSporksActive.begin();
@@ -119,15 +154,14 @@ int64_t GetSporkValue(int nSporkID)
     return r;
 }
 
-void ExecuteSpork(int nSporkID, int nValue)
+// grab the spork value, and see if it's off
+bool IsSporkActive(int nSporkID)
 {
-    //correct fork via spork technology
-    if (nSporkID == SPORK_5_RECONSIDER_BLOCKS && nValue > 0) {
-        LogPrintf("Spork::ExecuteSpork -- Reconsider Last %d Blocks\n", nValue);
-
-        ReprocessBlocks(nValue);
-    }
+    int64_t r = GetSporkValue(nSporkID);
+    if (r == -1) return false;
+    return r < GetTime();
 }
+
 
 void ReprocessBlocks(int nBlocks)
 {
@@ -164,14 +198,13 @@ bool CSporkManager::CheckSignature(CSporkMessage& spork)
 {
     //note: need to investigate why this is failing
     std::string strMessage = boost::lexical_cast<std::string>(spork.nSporkID) + boost::lexical_cast<std::string>(spork.nValue) + boost::lexical_cast<std::string>(spork.nTimeSigned);
-    CPubKey pubkey(ParseHex(Params().SporkKey()));
-
+    CPubKey pubkeynew(ParseHex(Params().SporkKey()));
     std::string errorMessage = "";
-    if (!obfuScationSigner.VerifyMessage(pubkey, spork.vchSig, strMessage, errorMessage)) {
-        return false;
+    if (obfuScationSigner.VerifyMessage(pubkeynew, spork.vchSig, strMessage, errorMessage)) {
+        return true;
     }
 
-    return true;
+    return false;
 }
 
 bool CSporkManager::Sign(CSporkMessage& spork)
@@ -183,17 +216,17 @@ bool CSporkManager::Sign(CSporkMessage& spork)
     std::string errorMessage = "";
 
     if (!obfuScationSigner.SetKey(strMasterPrivKey, errorMessage, key2, pubkey2)) {
-        LogPrintf("CMasternodePayments::Sign - ERROR: Invalid masternodeprivkey: '%s'\n", errorMessage);
+        LogPrint("masternode","CMasternodePayments::Sign - ERROR: Invalid masternodeprivkey: '%s'\n", errorMessage);
         return false;
     }
 
     if (!obfuScationSigner.SignMessage(strMessage, errorMessage, spork.vchSig, key2)) {
-        LogPrintf("CMasternodePayments::Sign - Sign message failed");
+        LogPrint("masternode","CMasternodePayments::Sign - Sign message failed");
         return false;
     }
 
     if (!obfuScationSigner.VerifyMessage(pubkey2, spork.vchSig, strMessage, errorMessage)) {
-        LogPrintf("CMasternodePayments::Sign - Verify message failed");
+        LogPrint("masternode","CMasternodePayments::Sign - Verify message failed");
         return false;
     }
 

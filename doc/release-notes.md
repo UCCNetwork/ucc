@@ -1,19 +1,19 @@
-UCC Core version 1.0 is now available from:
+UCC Wallet is now available from:
 
-  <https://github.com/UCC-Core/UCC/releases>
+  <https://github.com/UCCNetwork/UCC/releases>
 
 This is a major version release, including various bug fixes and
 performance improvements, as well as updated translations.
 
 Please report bugs using the issue tracker at github:
 
-  <https://github.com/UCC-Core/UCC/issues>
+  <https://github.com/UCCNetwork/UCC/issues>
 
 Compatibility
 ==============
 
-UCC Core is extensively tested on multiple operating systems using
-the Linux kernel, macOS 10.8+, and Windows Vista and later.
+UCC Wallet is extensively tested on multiple operating systems using
+the Linux kernel, macOS 10.8+, and Windows 7 and later.
 
 Microsoft ended support for Windows XP on [April 8th, 2014](https://www.microsoft.com/en-us/WindowsForBusiness/end-of-xp-support),
 No attempt is made to prevent installing or running the software on Windows XP, you

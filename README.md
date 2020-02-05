@@ -31,6 +31,9 @@ If you like our Idea, feel free to contact us and work with us. For Discussions 
 <tr><td>Blocktime average</td><td>1 min (DGW3)</td></tr>
 <tr><td>Number of transaction confirmations</td><td>6</td></tr>
 <tr><td>Maturity</td><td>60 confirmations</td></tr>
+<tr><td>Masternode reward system </td><td>T.N.T.</td></tr>
+<tr><td>Light | Medium | Full masternode requirement:</td><td>5000 | 10000 | 50000 XDNA</td></tr>
+<tr><td>Light | Medium | Full masternode rewards:</td><td>    10%  | 30%   | 50% of block reward</td></tr>
 </table>
 
 ### Block reward for PoS (assuming current PoW rate)

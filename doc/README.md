@@ -26,10 +26,7 @@ Drag UCC-Qt to your applications folder, and then run UCC-Qt.
 
 ### Need Help?
 
-* See the documentation at the [UCC Wiki](https://en.uccnetwork.org/wiki/Main_Page) ***TODO***
-for help and more information.
-* Ask for help on [BitcoinTalk](https://bitcointalk.org) or on the [UCC Forum](http://forum.uccnetwork.org/).
-* Join our Discord server [Discord Server](https://discord.gg/S9adMgS)
+* Join our Discord server [Discord Server](https://discord.gg/JkxUGTS)
 
 Building
 ---------------------
@@ -48,7 +45,6 @@ The UCC repo's [root README](https://github.com/UCC-Core/UCC/blob/master/README.
 - [Multiwallet Qt Development](multiwallet-qt.md)
 - [Release Notes](release-notes.md)
 - [Release Process](release-process.md)
-- [Source Code Documentation (External Link)](https://dev.visucore.com/bitcoin/doxygen/) ***TODO***
 - [Unit Tests](unit-tests.md)
 - [Unauthenticated REST Interface](REST-interface.md)
 - [Dnsseed Policy](dnsseed-policy.md)
@@ -56,7 +52,7 @@ The UCC repo's [root README](https://github.com/UCC-Core/UCC/blob/master/README.
 
 ### Resources
 
-* Discuss on the [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or the [UCC](http://forum.uccnetwork.org/) forum.
+* Discuss on Discord: https://discord.gg/JkxUGTS
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)

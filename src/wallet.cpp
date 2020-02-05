@@ -2446,25 +2446,9 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, uint32_t nTime, unsigne
         return false;
 
     // Calculate reward
-//    CAmount blockReward = GetBlockValue(chainActive.Height()+1) + nFees;
-    CAmount blockReward = GetBlockValue(chainActive.Height() + 1);
+    const CBlockIndex* pIndex0 = chainActive.Tip();
 
-    auto vDevReward  = blockReward * Params().GetDevFee() / 100;
-    auto vFundReward = blockReward * Params().GetFundFee() / 100;
-    
-    CScript scriptDevPubKeyIn  = CScript{} << Params().xUCCDevKey() << OP_CHECKSIG;
-    CScript scriptFundPubKeyIn = CScript{} << Params().xUCCFundKey() << OP_CHECKSIG;
-	
-    txNew.vout.emplace_back(vDevReward, scriptDevPubKeyIn);
-    txNew.vout.emplace_back(vFundReward, scriptFundPubKeyIn);
-
-    blockReward -= vDevReward;
-    blockReward -= vFundReward;
- 
-    blockReward -= masternodePayments.FillBlockPayee(txNew, blockReward, true);
-
-    // after payments; add block reward to credit
-    nCredit += blockReward;
+    nCredit += GetBlockValue(pIndex0->nHeight + 1);
 
     //presstab HyperStake - calculate the total size of our new output including the stake reward so that we can use it to decide whether to split the stake outputs
     if (nCredit / 2 > nStakeSplitThreshold * COIN) {
