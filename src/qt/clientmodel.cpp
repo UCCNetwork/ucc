@@ -151,6 +151,10 @@ void ClientModel::update24hStatsTimer()
                         }
                     }
                 }
+            } else {
+                LogPrintf("update24hStatsTimer: Before Proof of Stake\n");
+                blockOldest = pblockindex->nHeight;
+                break;
             }
         }
         // select next (previous) block
